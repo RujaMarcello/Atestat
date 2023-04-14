@@ -45,28 +45,6 @@ CREATE TABLE IF NOT EXISTS group_information (
     group_name TEXT,
     group_picture TEXT
 );
-CREATE TABLE IF NOT EXISTS conversations (
-    id SERIAL PRIMARY KEY,
-    user1_id INT NOT NULL REFERENCES users(id),
-    user1_id INT NOT NULL REFERENCES users(id)
-);
-CREATE TABLE IF NOT EXISTS groups (
-    id SERIAL PRIMARY KEY,
-    group_name VARCHAR(255) NOT NULL
-);
-CREATE TABLE IF NOT EXISTS users_groups (
-    id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL REFERENCES users(id),
-    group_id INT NOT NULL REFERENCES groups(id),
-);
-CREATE TABLE IF NOT EXISTS message (
-    id SERIAL PRIMARY KEY,
-    sender_id INT NOT NULL REFERENCES users(id),
-    consignee_id INT NOT NULL REFERENCES users(id),
-    group_id INT REFERENCES groups(id),
-    Text TEXT NOT NULL,
-    sent_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-);
 INSERT INTO roles (id, role)
 VALUES (1, 'SUPERADMIN');
 INSERT INTO roles (id, role)
