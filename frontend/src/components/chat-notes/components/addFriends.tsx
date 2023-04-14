@@ -2,13 +2,14 @@ import { UserAddOutlined } from '@ant-design/icons';
 import { Avatar, Button } from 'antd';
 import { FC } from 'react';
 
+import { FriendDto } from '../../../generated/api';
 import styles from '../index.module.scss';
 interface AddFriendsProps {
-  data: any;
-  deleteUserFromList: any;
+  data: FriendDto;
+  deleteUserFromList: (id: number) => void;
 }
 const AddFriends: FC<AddFriendsProps> = ({ data, deleteUserFromList }) => {
-  const sendFriendRequest = async (id: any) => {
+  const sendFriendRequest = async (id: string) => {
     const URL =
       'http://localhost:3001/api/add-friend?' +
       new URLSearchParams({
@@ -22,7 +23,7 @@ const AddFriends: FC<AddFriendsProps> = ({ data, deleteUserFromList }) => {
       },
     }).then((res) => {
       if (res.status === 200) {
-        deleteUserFromList(id);
+        deleteUserFromList(parseInt(id));
       }
     });
   };
@@ -42,7 +43,12 @@ const AddFriends: FC<AddFriendsProps> = ({ data, deleteUserFromList }) => {
             </p>
           </div>
           <div className={styles.frendsRequestOptions}>
-            <Button onClick={() => sendFriendRequest(data.id)} size="large" type="text" icon={<UserAddOutlined />} />
+            <Button
+              onClick={() => sendFriendRequest(data.id.toString())}
+              size="large"
+              type="text"
+              icon={<UserAddOutlined />}
+            />
           </div>
         </div>
         <div className={styles.conversationBorder}></div>

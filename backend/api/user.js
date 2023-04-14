@@ -16,6 +16,7 @@ router.get("/user/current", verifyToken, async (req, res) => {
       WHERE users_roles.user_id = '${id}'`);
 
     const response = {
+      id: information.rows[0].user_id,
       firstName: information.rows[0].first_name,
       lastName: information.rows[0].last_name,
       email: information.rows[0].email,

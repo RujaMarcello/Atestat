@@ -2,13 +2,21 @@ import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { Avatar, Button } from 'antd';
 import { FC } from 'react';
 
+import { FriendDto } from '../../../generated/api';
+import { useChatProvider } from '../context/context';
 import styles from '../index.module.scss';
-// interface MessageListProps {
-//   children?: ReactNode;
-// }
+import { WINDOW } from '../window';
 
-const Friend: FC<any> = ({ data, addFriendRequest, deleteUserFromList }) => {
-  const acceptFriendRequest = async (id: any) => {
+interface FriendProps {
+  addFriendRequest: (id: number, chatId: number) => void;
+  deleteUserFromList: (id: number) => void;
+  data: FriendDto;
+}
+
+const Friend: FC<FriendProps> = ({ data, addFriendRequest, deleteUserFromList }) => {
+  const { handleWindow, handleChatId } = useChatProvider();
+
+  const acceptFriendRequest = async (id: string) => {
     const URL =
       'http://localhost:3001/api/accept-friend?' +
       new URLSearchParams({
@@ -20,14 +28,16 @@ const Friend: FC<any> = ({ data, addFriendRequest, deleteUserFromList }) => {
         'Content-Type': 'application/json',
         token: localStorage.getItem('token') || '',
       },
-    }).then((response) => {
+    }).then(async (response) => {
+      const res = await response.json();
+
       if (response.status == 200) {
-        addFriendRequest(data.id);
+        addFriendRequest(data.id, res.chatId);
       }
     });
   };
 
-  const rejectFriendRequest = async (id: any) => {
+  const rejectFriendRequest = async (id: string) => {
     const URL =
       'http://localhost:3001/api/reject-friend?' +
       new URLSearchParams({
@@ -47,7 +57,15 @@ const Friend: FC<any> = ({ data, addFriendRequest, deleteUserFromList }) => {
   };
 
   return (
-    <div className={styles.converationContainer}>
+    <div
+      onClick={() => {
+        if (data.status !== 'padding') {
+          handleWindow(WINDOW.chat);
+          handleChatId(data.chatId?.toString() || '');
+        }
+      }}
+      className={styles.converationContainer}
+    >
       <div>
         <Avatar size={64} src={data.profilePictureUrl} />
       </div>
@@ -64,11 +82,11 @@ const Friend: FC<any> = ({ data, addFriendRequest, deleteUserFromList }) => {
           {data.status === 'padding' ? (
             <div className={styles.frendsRequestOptions}>
               <Button
-                onClick={() => acceptFriendRequest(data.id)}
+                onClick={() => acceptFriendRequest(data.id.toString())}
                 style={{ color: 'green', borderColor: 'green' }}
                 icon={<CheckOutlined />}
               />
-              <Button onClick={() => rejectFriendRequest(data.id)} danger icon={<CloseOutlined />} />
+              <Button onClick={() => rejectFriendRequest(data.id.toString())} danger icon={<CloseOutlined />} />
             </div>
           ) : null}
         </div>

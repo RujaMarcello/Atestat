@@ -2,12 +2,13 @@ import { LeftOutlined } from '@ant-design/icons';
 import { Avatar, Button } from 'antd';
 import { FC } from 'react';
 
+import { useChatProvider } from '../context/context';
 import styles from '../index.module.scss';
 import { WINDOW } from '../window';
-interface MessageChatHeaderProps {
-  handleWindow: (window: string) => void;
-}
-const MessageChatHeader: FC<MessageChatHeaderProps> = ({ handleWindow }) => {
+
+const MessageChatHeader: FC = () => {
+  const { handleWindow } = useChatProvider();
+
   return (
     <div className={styles.messageChatHeaderContainer}>
       <Button

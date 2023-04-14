@@ -83,7 +83,7 @@ const routes: Array<RouteObject> = [
         ],
       },
       {
-        path: 'notification',
+        path: 'chat',
         children: [
           {
             index: true,

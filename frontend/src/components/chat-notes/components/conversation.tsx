@@ -1,29 +1,47 @@
 import { Avatar, Badge } from 'antd';
 import { FC } from 'react';
 
+import shortTime from '../../../utils/time';
 import styles from '../index.module.scss';
-import { WINDOW } from '../window';
+
 interface ConvarasationProps {
-  handleWindow: (window: string) => void;
+  name: string;
+  lastMessageSentAt: string;
+  profilePictureUrl: string;
+  lastLineText: string;
+  onClick?: () => void;
 }
-const Conversation: FC<ConvarasationProps> = ({ handleWindow }) => {
+
+const Conversation: FC<ConvarasationProps> = ({
+  lastMessageSentAt,
+  profilePictureUrl,
+  name,
+  lastLineText,
+  onClick,
+}) => {
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    }
+  };
+
   return (
-    <div onClick={() => handleWindow(WINDOW.chat)} className={styles.converationContainer}>
+    <div onClick={handleClick} className={styles.converationContainer}>
       <div>
-        <Avatar size={64} src="https://i.imgur.com/KniTFHh.jpg" />
+        <Avatar size={64} src={profilePictureUrl} />
       </div>
       <div className={styles.conversationDataContainer}>
         <div className={styles.converationData}>
           <div>
             <h1>
-              <strong>Macello</strong>
+              <strong>{name}</strong>
             </h1>
             <p>
-              <i>scrie...</i>
+              <i>{lastLineText}</i>
             </p>
           </div>
           <div className={styles.converationTime}>
-            <p>12:42</p>
+            <p>{shortTime(lastMessageSentAt)}</p>
             <Badge style={{ marginTop: '5px' }} color="#AA14F0" count={99 + '+'} />
           </div>
         </div>

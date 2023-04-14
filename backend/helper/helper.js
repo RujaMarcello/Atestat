@@ -34,4 +34,50 @@ async function isPasswordValid(password, email) {
   }
 }
 
-module.exports = { isEmailValid, isPasswordValid };
+async function getAllConversationsByUserId(userId) {
+  try {
+    const usersChatRelations = await pool.query(
+      `SELECT * FROM chat_relations WHERE user_id = ${userId}`
+    );
+    if (usersChatRelations.rowCount == 0) {
+      return undefined;
+    }
+    return usersChatRelations.rows;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function isGroupConversation(myChatId, userId) {
+  try {
+    const isGroup = await pool.query(
+      `SELECT * FROM chat_relations WHERE chat_id = ${myChatId} AND user_id != ${userId}`
+    );
+    return isGroup.rows;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function isConversationHistoryEmpty(myChatId) {
+  try {
+    const getAllConversationsByChatId = await pool.query(
+      `SELECT * FROM messages WHERE chat_id = ${myChatId} ORDER BY create_at ASC`
+    );
+    if (getAllConversationsByChatId.rowCount == 0) {
+      return undefined;
+    }
+
+    return getAllConversationsByChatId.rows;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+module.exports = {
+  isEmailValid,
+  isPasswordValid,
+  getAllConversationsByUserId,
+  isGroupConversation,
+  isConversationHistoryEmpty,
+};

@@ -174,10 +174,130 @@ components:
         userRole:
           id: 0
           role: SUPERADMIN
+    FriendDto:
+      required:
+        - email
+        - firstName
+        - id
+        - lastName
+        - status
+      properties: 
+        email:
+          type: string
+          minLength:  1
+        firstName:
+          type: string
+          minLength:  1
+        id:
+          type: integer
+          minLength:  1
+        lastName:
+          type: string
+        profilePictureUrl:
+          type: string
+          minLength:  1
+        status:
+          type: string
+          minLength:  1
+        chatId:
+          type: integer
+          minLength:  1
+      example:
+        email:  string
+        firstName:  string
+        id: integer
+        lastName: string
+        profilePictureUrl:  string
+        status: string
+
+    MessageDto:
+      required:
+      - chatId
+      - createAt
+      - id
+      - lineText
+      - userId
+      properties:
+        chatId:
+          type: string
+          minLength:  1
+        createAt: 
+          type: string
+          minLength:  1
+        id:
+          type: integer
+          minLength:  1
+        lineText:
+          type: string
+          minLength:  1
+        userId:
+          type: string
+          minLength:  1
+      example:
+        chatId: string
+        createAt: string
+        id: string
+        lineText: string
+        userId: string
+    ArrayOfMessages:
+      type: array
+      items:
+        "$ref": "#/components/schemas/MessageDto"
+    ArrayOfFriends:
+      type: array
+      items:
+        "$ref": "#/components/schemas/FriendDto"
+
+    ConversationDto:
+      required:
+      - chatId
+      - lastLineText
+      - lastSentMessage
+      properties:
+        chatId:
+          type: integer
+          minLength:  1
+        firstName:
+          type: string
+          minLength:  1
+        lastLineText:
+          type: string
+          minLength:  1
+        lastSentMessage:
+          type: string
+          minLength:  1
+        lastName: 
+          type: string
+          minLength:  1
+        groupName:
+          type: string
+          minLength:  1
+        groupPicture:
+          type: string
+          minLength:  1
+        profilePictureUrl:
+          type: string
+          minLength:  1
+        
+      example:
+        chatId: integer
+        firstName:  string
+        lastLineText: string
+        lastSentMessage:  string
+        lastName: string
+
+    ArrayOfConversations:
+      type: array
+      items:
+        "$ref": "#/components/schemas/ConversationDto"
+
+
+
 tags:
   - name: auth-controller
   - name: user-controller
   - name: chat-controller
+  - name: friend-controller
 
 "/login":
   post:
@@ -199,6 +319,7 @@ tags:
               type: string
       '406':
         description: Wrong email or password
+
 "/register":
   post:
     summary: Create a new account
@@ -249,6 +370,7 @@ tags:
             schema:
               "$ref": "#/components/schemas/UserDto"
 
+
 "/user":
   get:
     summary:  Return the data from the pointed email
@@ -273,10 +395,73 @@ tags:
             schema:
               "$ref": "#/components/schemas/UserDto"
 
+"/add-friend":
+  post:
+    summary:  Add friend route 
+    parameters:
+    - name: token
+      in: header
+      required: true
+      schema:
+        type: string
+    - in: query
+      name: friendId
+      required: true
+      schema:
+        type: integer
+    tags: 
+      - friend-controller
+    responses:
+      '200':
+        description:  Friend request has been sent successfully
 
-"/add-friend-list":
+"/accept-friend":
+  post:
+    summary:  Accept friend route
+    parameters:
+    - name: token
+      in: header
+      required: true
+      schema:
+        type: string
+    - in: query
+      name: friendId
+      required: true
+      schema:
+        type: integer
+    tags: 
+      - friend-controller
+    responses:
+      '200':
+        description:  Friend request has been accepted successfully
+      '409':
+        description:  Friend request already accepted
+
+"/reject-friend":
+  post:
+    summary:  Reject friend request
+    parameters:
+    - name: token
+      in: header
+      required: true
+      schema:
+        type: string
+    - in: query
+      name: friendId
+      required: true
+      schema:
+        type: integer
+    tags: 
+      - friend-controller
+    responses:
+      '200':
+        description:  Friend request rejected successfully
+
+
+
+"/friends-list":
   get:
-    summary: Lists of remain friends for user
+    summary: Lists of all friends
     parameters:
     - name: token
       in: header
@@ -284,11 +469,78 @@ tags:
       schema:
         type: string
     tags:
-    - chat-controller
+    - friend-controller
+    responses:
+      '200':
+        description:  List of all friends
+        content:
+          aplication/json:
+            schema:
+              "$ref": "#/components/schemas/ArrayOfFriends"
+
+"/add-friend-list":
+  get:
+    summary: Lists of all unfriends
+    parameters:
+    - name: token
+      in: header
+      required: true
+      schema:
+        type: string
+    tags:
+    - friend-controller
     responses:
       '200':
         description:  List of all unfriends
-        
+        content:
+          aplication/json:
+            schema:
+              "$ref": "#/components/schemas/ArrayOfFriends"
+
+"/get-all-conversations":
+  get:
+    summary:  Get all users conversations
+    parameters:
+    - name: token
+      in: header
+      required: true
+      schema: 
+        type: string
+    tags:
+    - friend-controller
+    responses:
+      '200':
+        description:  List of all conversations
+        content:
+          aplication/json:
+            schema:
+              "$ref": "#/components/schemas/ArrayOfConversations"
+
+"/get-messages":
+  get:
+    summary:  Get all messages from an conversations
+    parameters:
+    - name: token
+      in: header
+      required: true
+      schema: 
+        type: string
+    - in: query
+      name: chatId
+      required: true
+      schema:
+        type: string
+    tags: 
+    - chat-controller
+    responses:
+      '200':
+        description:  List of all messages
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ArrayOfMessages"
+
+
 "/users":
   get:
     summary: Return the list of all users
