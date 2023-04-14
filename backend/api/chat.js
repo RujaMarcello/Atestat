@@ -235,15 +235,18 @@ router.get("/get-messages", verifyToken, async (req, res) => {
   const { chatId } = req.query;
   try {
     const messages = await isConversationHistoryEmpty(chatId);
-    const response = messages.map((el) => {
-      return {
-        id: el.id,
-        userId: el.user_id,
-        chatId: el.chat_id,
-        lineText: el.line_text,
-        createAt: el.create_at,
-      };
-    });
+    const response =
+      messages && messages.length > 0
+        ? messages.map((el) => {
+            return {
+              id: el.id,
+              userId: el.user_id,
+              chatId: el.chat_id,
+              lineText: el.line_text,
+              createAt: el.create_at,
+            };
+          })
+        : [];
     return res.status(200).send(response);
   } catch (error) {
     console.log(error);
