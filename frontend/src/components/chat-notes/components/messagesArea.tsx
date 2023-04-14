@@ -29,7 +29,8 @@ const MessagesArea = () => {
   }, [currentChatId]);
 
   const sendMessage = async (lineText: string) => {
-    const URL = 'http://localhost:3001/api/send-message?' + new URLSearchParams({ chatId: currentChatId });
+    const URL =
+      `${process.env.REACT_APP_BACKEND_BASE_URL}/send-message?` + new URLSearchParams({ chatId: currentChatId });
     await fetch(URL, {
       method: 'POST',
       headers: {

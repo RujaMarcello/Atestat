@@ -11,7 +11,7 @@ interface AddFriendsProps {
 const AddFriends: FC<AddFriendsProps> = ({ data, deleteUserFromList }) => {
   const sendFriendRequest = async (id: string) => {
     const URL =
-      'http://localhost:3001/api/add-friend?' +
+      `${process.env.REACT_APP_BACKEND_BASE_URL}/add-friend?` +
       new URLSearchParams({
         friendId: id,
       });

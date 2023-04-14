@@ -18,7 +18,7 @@ const Friend: FC<FriendProps> = ({ data, addFriendRequest, deleteUserFromList })
 
   const acceptFriendRequest = async (id: string) => {
     const URL =
-      'http://localhost:3001/api/accept-friend?' +
+      `${process.env.REACT_APP_BACKEND_BASE_URL}/accept-friend?` +
       new URLSearchParams({
         friendId: id,
       });
@@ -39,7 +39,7 @@ const Friend: FC<FriendProps> = ({ data, addFriendRequest, deleteUserFromList })
 
   const rejectFriendRequest = async (id: string) => {
     const URL =
-      'http://localhost:3001/api/reject-friend?' +
+      `${process.env.REACT_APP_BACKEND_BASE_URL}/reject-friend?` +
       new URLSearchParams({
         friendId: id,
       });
