@@ -20,6 +20,13 @@ CREATE TABLE IF NOT EXISTS users_roles (
     role_id BIGINT DEFAULT 3,
     CONSTRAINT users_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE NO ACTION ON DELETE NO ACTION
 );
+CREATE TABLE IF NOT EXISTS friends (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) ON UPDATE NO ACTION ON DELETE NO ACTION,
+    friend_id INT,
+    status TEXT DEFAULT 'padding',
+    UNIQUE KEY friend_relationship (user_id, friend_id)
+);
 INSERT INTO roles (id, role)
 VALUES (1, 'SUPERADMIN');
 INSERT INTO roles (id, role)

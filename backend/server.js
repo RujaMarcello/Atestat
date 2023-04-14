@@ -28,6 +28,7 @@ const specs = swaggerJsDoc(options);
 
 app.use("/api", require("./api/auth"));
 app.use("/api", require("./api/user"));
+app.use("/api", require("./api/chat"));
 app.use(
   "/api/swagger",
   swaggerUI.serve,

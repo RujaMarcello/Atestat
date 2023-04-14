@@ -1,8 +1,8 @@
 import { Avatar, Badge } from 'antd';
 import { FC } from 'react';
 
-import styles from './index.module.scss';
-import { WINDOW } from './window';
+import styles from '../index.module.scss';
+import { WINDOW } from '../window';
 interface ConvarasationProps {
   handleWindow: (window: string) => void;
 }

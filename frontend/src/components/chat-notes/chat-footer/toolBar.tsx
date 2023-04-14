@@ -1,9 +1,9 @@
 import { MessageOutlined, TeamOutlined, UsergroupAddOutlined } from '@ant-design/icons';
-import { Badge, Button, Radio } from 'antd';
-import { FC, useState } from 'react';
+import { Badge, Button } from 'antd';
+import { FC } from 'react';
 
-import styles from './index.module.scss';
-import { WINDOW } from './window';
+import styles from '../index.module.scss';
+import { WINDOW } from '../window';
 interface ToolBarProps {
   handleWindow: (window: string) => void;
   selectedWindow: string;

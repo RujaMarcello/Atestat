@@ -1,11 +1,11 @@
 import { FC, useState } from 'react';
 
-import ChatContent from './chatContent';
-import MessageChatInput from './chatInput';
-import ChatHeader from './header';
+import ChatContent from './chat-content/chatContent';
+import MessageChatInput from './chat-footer/chatInput';
+import ToolBar from './chat-footer/toolBar';
+import ChatHeader from './chat-header/header';
+import MessageChatHeader from './chat-header/messageChatHeader';
 import styles from './index.module.scss';
-import MessageChatHeader from './messageChatHeader';
-import ToolBar from './toolBar';
 import { WINDOW } from './window';
 
 const Chat: FC = () => {

@@ -136,6 +136,7 @@ components:
           lastName: string
           email:  string
           created_at: string
+          profilePictureUrl:  string
           userRole:
             id: 0
             role: SUPERADMIN
@@ -176,6 +177,7 @@ components:
 tags:
   - name: auth-controller
   - name: user-controller
+  - name: chat-controller
 
 "/login":
   post:
@@ -271,6 +273,22 @@ tags:
             schema:
               "$ref": "#/components/schemas/UserDto"
 
+
+"/add-friend-list":
+  get:
+    summary: Lists of remain friends for user
+    parameters:
+    - name: token
+      in: header
+      required: true
+      schema:
+        type: string
+    tags:
+    - chat-controller
+    responses:
+      '200':
+        description:  List of all unfriends
+        
 "/users":
   get:
     summary: Return the list of all users

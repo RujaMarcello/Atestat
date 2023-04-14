@@ -2,8 +2,8 @@ import { LeftOutlined } from '@ant-design/icons';
 import { Avatar, Button } from 'antd';
 import { FC } from 'react';
 
-import styles from './index.module.scss';
-import { WINDOW } from './window';
+import styles from '../index.module.scss';
+import { WINDOW } from '../window';
 interface MessageChatHeaderProps {
   handleWindow: (window: string) => void;
 }

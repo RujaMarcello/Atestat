@@ -2,7 +2,7 @@ import { FilterOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
 import { FC, ReactNode, useState } from 'react';
 
-import styles from './index.module.scss';
+import styles from '../index.module.scss';
 interface ChatHeaderProps {
   children?: ReactNode;
 }

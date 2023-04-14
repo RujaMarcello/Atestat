@@ -1,8 +1,8 @@
 import { ArrowRightOutlined, CameraOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Layout } from 'antd';
+import { Button, Input } from 'antd';
 import { FC } from 'react';
 
-import styles from './index.module.scss';
+import styles from '../index.module.scss';
 
 const MessageChatInput: FC = () => {
   return (
