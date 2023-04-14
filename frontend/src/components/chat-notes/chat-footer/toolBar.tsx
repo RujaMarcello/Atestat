@@ -2,19 +2,18 @@ import { MessageOutlined, TeamOutlined, UsergroupAddOutlined } from '@ant-design
 import { Badge, Button } from 'antd';
 import { FC } from 'react';
 
+import { useChatProvider } from '../context/context';
 import styles from '../index.module.scss';
 import { WINDOW } from '../window';
-interface ToolBarProps {
-  handleWindow: (window: string) => void;
-  selectedWindow: string;
-}
 
-const ToolBar: FC<ToolBarProps> = ({ handleWindow, selectedWindow }) => {
+const ToolBar: FC = () => {
+  const { currentWindow, handleWindow } = useChatProvider();
+
   return (
     <div className={styles.toolBarContainer}>
       <Badge color="#AA14F0" offset={[-27, 10]} count={5}>
         <Button
-          style={{ fontSize: '1.5rem', color: selectedWindow === WINDOW.conversation ? '#AA14F0' : 'black' }}
+          style={{ fontSize: '1.5rem', color: currentWindow === WINDOW.conversation ? '#AA14F0' : 'black' }}
           size="large"
           onClick={() => handleWindow(WINDOW.conversation)}
           type="text"
@@ -24,7 +23,7 @@ const ToolBar: FC<ToolBarProps> = ({ handleWindow, selectedWindow }) => {
       </Badge>
       <Badge color="#AA14F0" offset={[-11, 12]} count={3}>
         <Button
-          style={{ fontSize: '1.5rem', color: selectedWindow === WINDOW.friends ? '#AA14F0' : 'black' }}
+          style={{ fontSize: '1.5rem', color: currentWindow === WINDOW.friends ? '#AA14F0' : 'black' }}
           size="large"
           onClick={() => handleWindow(WINDOW.friends)}
           type="text"
@@ -34,7 +33,7 @@ const ToolBar: FC<ToolBarProps> = ({ handleWindow, selectedWindow }) => {
       </Badge>
       <Badge>
         <Button
-          style={{ fontSize: '1.5rem', color: selectedWindow === WINDOW.addFriends ? '#AA14F0' : 'black' }}
+          style={{ fontSize: '1.5rem', color: currentWindow === WINDOW.addFriends ? '#AA14F0' : 'black' }}
           size="large"
           onClick={() => handleWindow(WINDOW.addFriends)}
           type="text"

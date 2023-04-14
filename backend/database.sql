@@ -25,7 +25,25 @@ CREATE TABLE IF NOT EXISTS friends (
     user_id INT REFERENCES users(id) ON UPDATE NO ACTION ON DELETE NO ACTION,
     friend_id INT,
     status TEXT DEFAULT 'padding',
-    UNIQUE KEY friend_relationship (user_id, friend_id)
+    CONSTRAINT friend_relationship UNIQUE (user_id, friend_id)
+);
+CREATE TABLE IF NOT EXISTS chat_relations (
+    id SERIAL PRIMARY KEY,
+    chat_id SERIAL,
+    user_id BIGINT REFERENCES users(id)
+);
+CREATE TABLE IF NOT EXISTS messages (
+    id SERIAL PRIMARY KEY,
+    user_id BIGINT REFERENCES users(id),
+    chat_id BIGINT,
+    line_text TEXT NOT NULL,
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS group_information (
+    id SERIAL PRIMARY KEY,
+    chat_id INT,
+    group_name TEXT,
+    group_picture TEXT
 );
 INSERT INTO roles (id, role)
 VALUES (1, 'SUPERADMIN');

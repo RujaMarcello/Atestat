@@ -24,6 +24,61 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 /**
  * 
  * @export
+ * @interface ConversationDto
+ */
+export interface ConversationDto {
+    /**
+     * 
+     * @type {number}
+     * @memberof ConversationDto
+     */
+    'chatId': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ConversationDto
+     */
+    'firstName'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ConversationDto
+     */
+    'lastLineText': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ConversationDto
+     */
+    'lastSentMessage': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ConversationDto
+     */
+    'lastName'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ConversationDto
+     */
+    'groupName'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ConversationDto
+     */
+    'groupPicture'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ConversationDto
+     */
+    'profilePictureUrl'?: string;
+}
+/**
+ * 
+ * @export
  * @interface DataDto
  */
 export interface DataDto {
@@ -67,6 +122,55 @@ export interface DataDto {
 /**
  * 
  * @export
+ * @interface FriendDto
+ */
+export interface FriendDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof FriendDto
+     */
+    'email': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FriendDto
+     */
+    'firstName': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof FriendDto
+     */
+    'id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof FriendDto
+     */
+    'lastName': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FriendDto
+     */
+    'profilePictureUrl'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FriendDto
+     */
+    'status': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof FriendDto
+     */
+    'chatId'?: number;
+}
+/**
+ * 
+ * @export
  * @interface LoginRequest
  */
 export interface LoginRequest {
@@ -82,6 +186,43 @@ export interface LoginRequest {
      * @memberof LoginRequest
      */
     'password': string;
+}
+/**
+ * 
+ * @export
+ * @interface MessageDto
+ */
+export interface MessageDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof MessageDto
+     */
+    'chatId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MessageDto
+     */
+    'createAt': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof MessageDto
+     */
+    'id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof MessageDto
+     */
+    'lineText': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MessageDto
+     */
+    'userId': string;
 }
 /**
  * 
@@ -435,7 +576,189 @@ export const ChatControllerApiAxiosParamCreator = function (configuration?: Conf
     return {
         /**
          * 
-         * @summary Lists of remain friends for user
+         * @summary Get all messages from an conversations
+         * @param {string} token 
+         * @param {string} chatId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMessagesGet: async (token: string, chatId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'token' is not null or undefined
+            assertParamExists('getMessagesGet', 'token', token)
+            // verify required parameter 'chatId' is not null or undefined
+            assertParamExists('getMessagesGet', 'chatId', chatId)
+            const localVarPath = `/get-messages`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (chatId !== undefined) {
+                localVarQueryParameter['chatId'] = chatId;
+            }
+
+            if (token !== undefined && token !== null) {
+                localVarHeaderParameter['token'] = String(token);
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * ChatControllerApi - functional programming interface
+ * @export
+ */
+export const ChatControllerApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = ChatControllerApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Get all messages from an conversations
+         * @param {string} token 
+         * @param {string} chatId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getMessagesGet(token: string, chatId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<MessageDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getMessagesGet(token, chatId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * ChatControllerApi - factory interface
+ * @export
+ */
+export const ChatControllerApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = ChatControllerApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Get all messages from an conversations
+         * @param {string} token 
+         * @param {string} chatId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMessagesGet(token: string, chatId: string, options?: any): AxiosPromise<Array<MessageDto>> {
+            return localVarFp.getMessagesGet(token, chatId, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * Request parameters for getMessagesGet operation in ChatControllerApi.
+ * @export
+ * @interface ChatControllerApiGetMessagesGetRequest
+ */
+export interface ChatControllerApiGetMessagesGetRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof ChatControllerApiGetMessagesGet
+     */
+    readonly token: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof ChatControllerApiGetMessagesGet
+     */
+    readonly chatId: string
+}
+
+/**
+ * ChatControllerApi - object-oriented interface
+ * @export
+ * @class ChatControllerApi
+ * @extends {BaseAPI}
+ */
+export class ChatControllerApi extends BaseAPI {
+    /**
+     * 
+     * @summary Get all messages from an conversations
+     * @param {ChatControllerApiGetMessagesGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ChatControllerApi
+     */
+    public getMessagesGet(requestParameters: ChatControllerApiGetMessagesGetRequest, options?: AxiosRequestConfig) {
+        return ChatControllerApiFp(this.configuration).getMessagesGet(requestParameters.token, requestParameters.chatId, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * FriendControllerApi - axios parameter creator
+ * @export
+ */
+export const FriendControllerApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Accept friend route
+         * @param {string} token 
+         * @param {number} friendId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        acceptFriendPost: async (token: string, friendId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'token' is not null or undefined
+            assertParamExists('acceptFriendPost', 'token', token)
+            // verify required parameter 'friendId' is not null or undefined
+            assertParamExists('acceptFriendPost', 'friendId', friendId)
+            const localVarPath = `/accept-friend`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (friendId !== undefined) {
+                localVarQueryParameter['friendId'] = friendId;
+            }
+
+            if (token !== undefined && token !== null) {
+                localVarHeaderParameter['token'] = String(token);
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Lists of all unfriends
          * @param {string} token 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -470,81 +793,505 @@ export const ChatControllerApiAxiosParamCreator = function (configuration?: Conf
                 options: localVarRequestOptions,
             };
         },
-    }
-};
-
-/**
- * ChatControllerApi - functional programming interface
- * @export
- */
-export const ChatControllerApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = ChatControllerApiAxiosParamCreator(configuration)
-    return {
         /**
          * 
-         * @summary Lists of remain friends for user
+         * @summary Add friend route
+         * @param {string} token 
+         * @param {number} friendId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addFriendPost: async (token: string, friendId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'token' is not null or undefined
+            assertParamExists('addFriendPost', 'token', token)
+            // verify required parameter 'friendId' is not null or undefined
+            assertParamExists('addFriendPost', 'friendId', friendId)
+            const localVarPath = `/add-friend`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (friendId !== undefined) {
+                localVarQueryParameter['friendId'] = friendId;
+            }
+
+            if (token !== undefined && token !== null) {
+                localVarHeaderParameter['token'] = String(token);
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Lists of all friends
          * @param {string} token 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async addFriendListGet(token: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        friendsListGet: async (token: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'token' is not null or undefined
+            assertParamExists('friendsListGet', 'token', token)
+            const localVarPath = `/friends-list`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (token !== undefined && token !== null) {
+                localVarHeaderParameter['token'] = String(token);
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get all users conversations
+         * @param {string} token 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAllConversationsGet: async (token: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'token' is not null or undefined
+            assertParamExists('getAllConversationsGet', 'token', token)
+            const localVarPath = `/get-all-conversations`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (token !== undefined && token !== null) {
+                localVarHeaderParameter['token'] = String(token);
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Reject friend request
+         * @param {string} token 
+         * @param {number} friendId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        rejectFriendPost: async (token: string, friendId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'token' is not null or undefined
+            assertParamExists('rejectFriendPost', 'token', token)
+            // verify required parameter 'friendId' is not null or undefined
+            assertParamExists('rejectFriendPost', 'friendId', friendId)
+            const localVarPath = `/reject-friend`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (friendId !== undefined) {
+                localVarQueryParameter['friendId'] = friendId;
+            }
+
+            if (token !== undefined && token !== null) {
+                localVarHeaderParameter['token'] = String(token);
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * FriendControllerApi - functional programming interface
+ * @export
+ */
+export const FriendControllerApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = FriendControllerApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Accept friend route
+         * @param {string} token 
+         * @param {number} friendId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async acceptFriendPost(token: string, friendId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.acceptFriendPost(token, friendId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Lists of all unfriends
+         * @param {string} token 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async addFriendListGet(token: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FriendDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.addFriendListGet(token, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Add friend route
+         * @param {string} token 
+         * @param {number} friendId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async addFriendPost(token: string, friendId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addFriendPost(token, friendId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Lists of all friends
+         * @param {string} token 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async friendsListGet(token: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FriendDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.friendsListGet(token, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get all users conversations
+         * @param {string} token 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAllConversationsGet(token: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ConversationDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAllConversationsGet(token, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Reject friend request
+         * @param {string} token 
+         * @param {number} friendId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async rejectFriendPost(token: string, friendId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.rejectFriendPost(token, friendId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
 };
 
 /**
- * ChatControllerApi - factory interface
+ * FriendControllerApi - factory interface
  * @export
  */
-export const ChatControllerApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = ChatControllerApiFp(configuration)
+export const FriendControllerApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = FriendControllerApiFp(configuration)
     return {
         /**
          * 
-         * @summary Lists of remain friends for user
+         * @summary Accept friend route
+         * @param {string} token 
+         * @param {number} friendId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        acceptFriendPost(token: string, friendId: number, options?: any): AxiosPromise<void> {
+            return localVarFp.acceptFriendPost(token, friendId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Lists of all unfriends
          * @param {string} token 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addFriendListGet(token: string, options?: any): AxiosPromise<void> {
+        addFriendListGet(token: string, options?: any): AxiosPromise<Array<FriendDto>> {
             return localVarFp.addFriendListGet(token, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Add friend route
+         * @param {string} token 
+         * @param {number} friendId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addFriendPost(token: string, friendId: number, options?: any): AxiosPromise<void> {
+            return localVarFp.addFriendPost(token, friendId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Lists of all friends
+         * @param {string} token 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        friendsListGet(token: string, options?: any): AxiosPromise<Array<FriendDto>> {
+            return localVarFp.friendsListGet(token, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get all users conversations
+         * @param {string} token 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAllConversationsGet(token: string, options?: any): AxiosPromise<Array<ConversationDto>> {
+            return localVarFp.getAllConversationsGet(token, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Reject friend request
+         * @param {string} token 
+         * @param {number} friendId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        rejectFriendPost(token: string, friendId: number, options?: any): AxiosPromise<void> {
+            return localVarFp.rejectFriendPost(token, friendId, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * Request parameters for addFriendListGet operation in ChatControllerApi.
+ * Request parameters for acceptFriendPost operation in FriendControllerApi.
  * @export
- * @interface ChatControllerApiAddFriendListGetRequest
+ * @interface FriendControllerApiAcceptFriendPostRequest
  */
-export interface ChatControllerApiAddFriendListGetRequest {
+export interface FriendControllerApiAcceptFriendPostRequest {
     /**
      * 
      * @type {string}
-     * @memberof ChatControllerApiAddFriendListGet
+     * @memberof FriendControllerApiAcceptFriendPost
+     */
+    readonly token: string
+
+    /**
+     * 
+     * @type {number}
+     * @memberof FriendControllerApiAcceptFriendPost
+     */
+    readonly friendId: number
+}
+
+/**
+ * Request parameters for addFriendListGet operation in FriendControllerApi.
+ * @export
+ * @interface FriendControllerApiAddFriendListGetRequest
+ */
+export interface FriendControllerApiAddFriendListGetRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof FriendControllerApiAddFriendListGet
      */
     readonly token: string
 }
 
 /**
- * ChatControllerApi - object-oriented interface
+ * Request parameters for addFriendPost operation in FriendControllerApi.
  * @export
- * @class ChatControllerApi
- * @extends {BaseAPI}
+ * @interface FriendControllerApiAddFriendPostRequest
  */
-export class ChatControllerApi extends BaseAPI {
+export interface FriendControllerApiAddFriendPostRequest {
     /**
      * 
-     * @summary Lists of remain friends for user
-     * @param {ChatControllerApiAddFriendListGetRequest} requestParameters Request parameters.
+     * @type {string}
+     * @memberof FriendControllerApiAddFriendPost
+     */
+    readonly token: string
+
+    /**
+     * 
+     * @type {number}
+     * @memberof FriendControllerApiAddFriendPost
+     */
+    readonly friendId: number
+}
+
+/**
+ * Request parameters for friendsListGet operation in FriendControllerApi.
+ * @export
+ * @interface FriendControllerApiFriendsListGetRequest
+ */
+export interface FriendControllerApiFriendsListGetRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof FriendControllerApiFriendsListGet
+     */
+    readonly token: string
+}
+
+/**
+ * Request parameters for getAllConversationsGet operation in FriendControllerApi.
+ * @export
+ * @interface FriendControllerApiGetAllConversationsGetRequest
+ */
+export interface FriendControllerApiGetAllConversationsGetRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof FriendControllerApiGetAllConversationsGet
+     */
+    readonly token: string
+}
+
+/**
+ * Request parameters for rejectFriendPost operation in FriendControllerApi.
+ * @export
+ * @interface FriendControllerApiRejectFriendPostRequest
+ */
+export interface FriendControllerApiRejectFriendPostRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof FriendControllerApiRejectFriendPost
+     */
+    readonly token: string
+
+    /**
+     * 
+     * @type {number}
+     * @memberof FriendControllerApiRejectFriendPost
+     */
+    readonly friendId: number
+}
+
+/**
+ * FriendControllerApi - object-oriented interface
+ * @export
+ * @class FriendControllerApi
+ * @extends {BaseAPI}
+ */
+export class FriendControllerApi extends BaseAPI {
+    /**
+     * 
+     * @summary Accept friend route
+     * @param {FriendControllerApiAcceptFriendPostRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ChatControllerApi
+     * @memberof FriendControllerApi
      */
-    public addFriendListGet(requestParameters: ChatControllerApiAddFriendListGetRequest, options?: AxiosRequestConfig) {
-        return ChatControllerApiFp(this.configuration).addFriendListGet(requestParameters.token, options).then((request) => request(this.axios, this.basePath));
+    public acceptFriendPost(requestParameters: FriendControllerApiAcceptFriendPostRequest, options?: AxiosRequestConfig) {
+        return FriendControllerApiFp(this.configuration).acceptFriendPost(requestParameters.token, requestParameters.friendId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Lists of all unfriends
+     * @param {FriendControllerApiAddFriendListGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FriendControllerApi
+     */
+    public addFriendListGet(requestParameters: FriendControllerApiAddFriendListGetRequest, options?: AxiosRequestConfig) {
+        return FriendControllerApiFp(this.configuration).addFriendListGet(requestParameters.token, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Add friend route
+     * @param {FriendControllerApiAddFriendPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FriendControllerApi
+     */
+    public addFriendPost(requestParameters: FriendControllerApiAddFriendPostRequest, options?: AxiosRequestConfig) {
+        return FriendControllerApiFp(this.configuration).addFriendPost(requestParameters.token, requestParameters.friendId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Lists of all friends
+     * @param {FriendControllerApiFriendsListGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FriendControllerApi
+     */
+    public friendsListGet(requestParameters: FriendControllerApiFriendsListGetRequest, options?: AxiosRequestConfig) {
+        return FriendControllerApiFp(this.configuration).friendsListGet(requestParameters.token, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get all users conversations
+     * @param {FriendControllerApiGetAllConversationsGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FriendControllerApi
+     */
+    public getAllConversationsGet(requestParameters: FriendControllerApiGetAllConversationsGetRequest, options?: AxiosRequestConfig) {
+        return FriendControllerApiFp(this.configuration).getAllConversationsGet(requestParameters.token, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Reject friend request
+     * @param {FriendControllerApiRejectFriendPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FriendControllerApi
+     */
+    public rejectFriendPost(requestParameters: FriendControllerApiRejectFriendPostRequest, options?: AxiosRequestConfig) {
+        return FriendControllerApiFp(this.configuration).rejectFriendPost(requestParameters.token, requestParameters.friendId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
