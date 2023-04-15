@@ -36,6 +36,9 @@ router.post("/accept-friend", verifyToken, async (req, res) => {
     await pool.query(
       `INSERT INTO chat_relations (chat_id, user_id) VALUES (${chatId.rows[0].chat_id}, ${friendId})`
     );
+    await pool.query(
+      `UPDATE friends SET chat_id = ${chatId.rows[0].chat_id} WHERE user_id = ${friendId} AND friend_id = ${userId}`
+    );
     return res.status(200).send({
       message: "Friend request accepted",
       chatId: chatId.rows[0].chat_id,
@@ -75,23 +78,6 @@ router.get("/friends-list", verifyToken, async (req, res) => {
         ON users.id = friends.friend_id
         WHERE friends.user_id = ${userId} AND friends.status = 'accepted'
       `);
-    const myChatIds = await getAllConversationsByUserId(userId);
-
-    for (const friend of response.rows) {
-      const friendId = friend.user_id;
-      const friendChatIds = await getAllConversationsByUserId(friendId);
-
-      const common =
-        friendChatIds &&
-        myChatIds &&
-        myChatIds
-          .filter((obj1) =>
-            friendChatIds.some((obj2) => obj1.chat_id === obj2.chat_id)
-          )
-          .sort((obj1, obj2) => obj1.id - obj2.id);
-
-      friend.chat_id = common && common[0].chat_id;
-    }
 
     const data = response.rows.map((el) => {
       return {

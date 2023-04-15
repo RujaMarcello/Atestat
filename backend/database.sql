@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS friends (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON UPDATE NO ACTION ON DELETE NO ACTION,
     friend_id INT,
+    chat_id INT,
     status TEXT DEFAULT 'padding',
     CONSTRAINT friend_relationship UNIQUE (user_id, friend_id)
 );
