@@ -1,4 +1,4 @@
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 
 import { MessageDto } from '../../../generated/api';
 import styles from '../index.module.scss';
@@ -10,6 +10,13 @@ interface MessagesProps {
 const Messages: FC<any> = ({ messages }) => {
   const [showScrollbar, setShowScrollbar] = useState<boolean>(true);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const allMessagesRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (allMessagesRef.current) {
+      allMessagesRef.current.scrollTop = allMessagesRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handleScroll = () => {
     setShowScrollbar(true);
@@ -34,6 +41,7 @@ const Messages: FC<any> = ({ messages }) => {
 
   return (
     <div
+      ref={allMessagesRef}
       onScroll={handleScroll}
       className={`${styles.chatContentMessages} ${showScrollbar ? '' : styles.hideScrollbar}`}
     >
