@@ -317,6 +317,36 @@
         }
       }
     },
+    "/get-toolbar-counts": {
+      "get": {
+        "summary": "Get initial counts of ToolBar",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "chat-controller"
+        ],
+        "responses": {
+          "200": {
+            "description": "Get initial counts of ToolBar",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/get-all-conversations": {
       "get": {
         "summary": "Get all users conversations",

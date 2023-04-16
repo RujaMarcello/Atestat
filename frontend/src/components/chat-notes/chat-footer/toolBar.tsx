@@ -6,7 +6,11 @@ import { useChatProvider } from '../context/context';
 import styles from '../index.module.scss';
 import { WINDOW } from '../window';
 
-const ToolBar: FC = () => {
+interface ToolBarProps {
+  friendsRequestCount: number;
+}
+
+const ToolBar: FC<ToolBarProps> = ({ friendsRequestCount }) => {
   const { currentWindow, handleWindow } = useChatProvider();
 
   return (
@@ -21,7 +25,7 @@ const ToolBar: FC = () => {
         ></Button>
         <div className={styles.toolName}>Conversation</div>
       </Badge>
-      <Badge color="#AA14F0" offset={[-11, 12]} count={3}>
+      <Badge color="#AA14F0" offset={[-11, 12]} count={friendsRequestCount}>
         <Button
           style={{ fontSize: '1.5rem', color: currentWindow === WINDOW.friends ? '#AA14F0' : 'black' }}
           size="large"
