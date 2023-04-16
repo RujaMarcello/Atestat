@@ -1,11 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 
 import { FriendDto } from '../../../generated/api';
 import api from '../../../utils/api';
 import Friend from './friend';
 
-const FriendsList = () => {
+interface FriendsListProps {
+  handleFriendsRequestsCount: (count: number) => void;
+}
+
+const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
   const [friendsList, setFriendsList] = useState<FriendDto[]>([]);
+
+  useEffect(() => {
+    const count = friendsList.filter((friend) => friend.status === 'padding').length;
+
+    handleFriendsRequestsCount(count);
+  }, [friendsList, handleFriendsRequestsCount]);
 
   useEffect(() => {
     const handleFriendsList = async () => {

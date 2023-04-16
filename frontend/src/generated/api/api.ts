@@ -618,6 +618,43 @@ export const ChatControllerApiAxiosParamCreator = function (configuration?: Conf
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary Get initial counts of ToolBar
+         * @param {string} token 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getToolbarCountsGet: async (token: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'token' is not null or undefined
+            assertParamExists('getToolbarCountsGet', 'token', token)
+            const localVarPath = `/get-toolbar-counts`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (token !== undefined && token !== null) {
+                localVarHeaderParameter['token'] = String(token);
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -640,6 +677,17 @@ export const ChatControllerApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getMessagesGet(token, chatId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+        /**
+         * 
+         * @summary Get initial counts of ToolBar
+         * @param {string} token 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getToolbarCountsGet(token: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<number>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getToolbarCountsGet(token, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
     }
 };
 
@@ -660,6 +708,16 @@ export const ChatControllerApiFactory = function (configuration?: Configuration,
          */
         getMessagesGet(token: string, chatId: string, options?: any): AxiosPromise<Array<MessageDto>> {
             return localVarFp.getMessagesGet(token, chatId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get initial counts of ToolBar
+         * @param {string} token 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getToolbarCountsGet(token: string, options?: any): AxiosPromise<number> {
+            return localVarFp.getToolbarCountsGet(token, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -686,6 +744,20 @@ export interface ChatControllerApiGetMessagesGetRequest {
 }
 
 /**
+ * Request parameters for getToolbarCountsGet operation in ChatControllerApi.
+ * @export
+ * @interface ChatControllerApiGetToolbarCountsGetRequest
+ */
+export interface ChatControllerApiGetToolbarCountsGetRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof ChatControllerApiGetToolbarCountsGet
+     */
+    readonly token: string
+}
+
+/**
  * ChatControllerApi - object-oriented interface
  * @export
  * @class ChatControllerApi
@@ -702,6 +774,18 @@ export class ChatControllerApi extends BaseAPI {
      */
     public getMessagesGet(requestParameters: ChatControllerApiGetMessagesGetRequest, options?: AxiosRequestConfig) {
         return ChatControllerApiFp(this.configuration).getMessagesGet(requestParameters.token, requestParameters.chatId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get initial counts of ToolBar
+     * @param {ChatControllerApiGetToolbarCountsGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ChatControllerApi
+     */
+    public getToolbarCountsGet(requestParameters: ChatControllerApiGetToolbarCountsGetRequest, options?: AxiosRequestConfig) {
+        return ChatControllerApiFp(this.configuration).getToolbarCountsGet(requestParameters.token, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

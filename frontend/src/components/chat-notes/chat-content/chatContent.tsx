@@ -1,5 +1,6 @@
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 
+import api from '../../../utils/api';
 import ToolBar from '../chat-footer/toolBar';
 import ChatHeader from '../chat-header/header';
 import AddFriendsList from '../components/addFriendsList';
@@ -13,8 +14,13 @@ import { WINDOW } from '../window';
 const ChatContent: FC = () => {
   const { currentWindow } = useChatProvider();
   const [showScrollbar, setShowScrollbar] = useState<boolean>(true);
+  const [friendsRequestsCount, setFriendsRequestsCount] = useState(0);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleFriendsRequestsCount = (count: number) => {
+    setFriendsRequestsCount(count);
+  };
 
   const handleScroll = () => {
     setShowScrollbar(true);
@@ -33,6 +39,15 @@ const ChatContent: FC = () => {
     };
   };
 
+  useEffect(() => {
+    const handleCounts = async () => {
+      const response = await api.chat.getToolbarCountsGet({ token: localStorage.getItem('token') || '' });
+
+      setFriendsRequestsCount(response.data);
+    };
+    handleCounts();
+  }, []);
+
   return (
     <React.Fragment>
       <div className={styles.container}>
@@ -43,11 +58,13 @@ const ChatContent: FC = () => {
               onScroll={handleScroll}
               className={`${styles.chatContentGeneral} ${showScrollbar ? '' : styles.hideScrollbar}`}
             >
-              {currentWindow === WINDOW.friends && <FriendList />}
+              {currentWindow === WINDOW.friends && (
+                <FriendList handleFriendsRequestsCount={handleFriendsRequestsCount} />
+              )}
               {currentWindow === WINDOW.addFriends && <AddFriendsList />}
               {currentWindow === WINDOW.conversation && <ConversationsList />}
             </div>
-            <ToolBar />
+            <ToolBar friendsRequestCount={friendsRequestsCount} />
           </>
         )}
         {currentWindow === WINDOW.chat && <MessagesArea />}
