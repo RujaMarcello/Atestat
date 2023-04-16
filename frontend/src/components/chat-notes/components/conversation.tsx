@@ -42,7 +42,6 @@ const Conversation: FC<ConvarasationProps> = ({
           </div>
           <div className={styles.converationTime}>
             <p>{shortTime(lastMessageSentAt)}</p>
-            <Badge style={{ marginTop: '5px' }} color="#AA14F0" count={99 + '+'} />
           </div>
         </div>
         <div className={styles.conversationBorder}></div>
