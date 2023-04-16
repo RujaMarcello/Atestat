@@ -15,7 +15,7 @@ const ToolBar: FC<ToolBarProps> = ({ friendsRequestCount }) => {
 
   return (
     <div className={styles.toolBarContainer}>
-      <Badge color="#AA14F0" offset={[-27, 10]} count={5}>
+      <Badge color="#AA14F0" offset={[-27, 10]} count={0}>
         <Button
           style={{ fontSize: '1.5rem', color: currentWindow === WINDOW.conversation ? '#AA14F0' : 'black' }}
           size="large"
