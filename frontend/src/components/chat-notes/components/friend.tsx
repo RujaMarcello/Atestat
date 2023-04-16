@@ -14,7 +14,7 @@ interface FriendProps {
 }
 
 const Friend: FC<FriendProps> = ({ data, addFriendRequest, deleteUserFromList }) => {
-  const { handleWindow, handleChatId } = useChatProvider();
+  const { handleWindow, handleChatId, handleCurrentUserData } = useChatProvider();
 
   const acceptFriendRequest = async (id: string) => {
     const URL =
@@ -62,6 +62,10 @@ const Friend: FC<FriendProps> = ({ data, addFriendRequest, deleteUserFromList })
         if (data.status !== 'padding') {
           handleWindow(WINDOW.chat);
           handleChatId(data.chatId?.toString() || '');
+          handleCurrentUserData({
+            name: data.firstName + ' ' + data.lastName,
+            profilePictureUrl: data.profilePictureUrl || '',
+          });
         }
       }}
       className={styles.converationContainer}

@@ -8,7 +8,7 @@ import { WINDOW } from '../window';
 
 const ConversationsList = () => {
   const [conversationsList, setConversationsList] = useState<ConversationDto[]>([]);
-  const { handleWindow, handleChatId } = useChatProvider();
+  const { handleWindow, handleChatId, handleCurrentUserData } = useChatProvider();
 
   useEffect(() => {
     const handleConversationsList = async () => {
@@ -32,11 +32,15 @@ const ConversationsList = () => {
               onClick={() => {
                 handleWindow(WINDOW.chat);
                 handleChatId(el.chatId.toString() || '');
+                handleCurrentUserData({
+                  name: el.firstName + ' ' + el.lastName,
+                  profilePictureUrl: el.profilePictureUrl || '',
+                });
               }}
               lastLineText={el.lastLineText}
               lastMessageSentAt={el.lastSentMessage}
               profilePictureUrl={el.profilePictureUrl || ''}
-              name={'groupName' in el ? el.groupName || '' : el.firstName || ''}
+              name={'groupName' in el ? el.groupName || '' : el.firstName + ' ' + el.lastName}
               key={el.chatId}
             />
           );

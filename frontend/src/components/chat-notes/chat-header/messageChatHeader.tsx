@@ -8,7 +8,7 @@ import { WINDOW } from '../window';
 
 const MessageChatHeader: FC = () => {
   const { handleWindow } = useChatProvider();
-
+  const { currentUserData } = useChatProvider();
   return (
     <div className={styles.messageChatHeaderContainer}>
       <Button
@@ -19,8 +19,8 @@ const MessageChatHeader: FC = () => {
         icon={<LeftOutlined />}
       ></Button>
       <div className={styles.messageChatHeaderImage}>
-        <Avatar size={48} src="https://i.imgur.com/KniTFHh.jpg"></Avatar>
-        <h1 className={styles.messageChatHeaderFriendName}>Ceapa</h1>
+        <Avatar size={48} src={currentUserData.profilePictureUrl}></Avatar>
+        <h1 className={styles.messageChatHeaderFriendName}>{currentUserData.name}</h1>
       </div>
     </div>
   );
