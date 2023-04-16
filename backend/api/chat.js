@@ -177,7 +177,7 @@ router.get("/get-all-conversations", verifyToken, async (req, res) => {
             chatHistoryList.push(group.rows[0]);
           } else {
             const friend = await pool.query(
-              `SELECT first_name, last_name FROM users WHERE id = ${isGroupChat[0].user_id}`
+              `SELECT first_name, last_name, profile_picture_url FROM users WHERE id = ${isGroupChat[0].user_id}`
             );
             friend.rows[0].chat_id = isGroupChat[0].chat_id;
             friend.rows[0].lastSentMessage = lastSentMessage;
@@ -193,7 +193,7 @@ router.get("/get-all-conversations", verifyToken, async (req, res) => {
           id: el.id,
           chatId: el.chat_id,
           groupName: el.group_name,
-          groupPicture: el.group_picture,
+          profilePictureUrl: el.group_picture,
           lastSentMessage: el.lastSentMessage,
           lastLineText: el.lastLineText,
         };
@@ -204,6 +204,7 @@ router.get("/get-all-conversations", verifyToken, async (req, res) => {
           chatId: el.chat_id,
           lastSentMessage: el.lastSentMessage,
           lastLineText: el.lastLineText,
+          profilePictureUrl: el.profile_picture_url,
         };
       }
     });
