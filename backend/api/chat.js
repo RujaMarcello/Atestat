@@ -100,17 +100,10 @@ router.get("/get-toolbar-counts", verifyToken, async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const response = await pool.query(`
-        SELECT * FROM users
-        LEFT JOIN friends
-        ON users.id = friends.user_id
-        WHERE friends.friend_id = ${userId} AND friends.status = 'padding'
-        UNION
-        SELECT * FROM users
-        LEFT JOIN friends
-        ON users.id = friends.friend_id
-        WHERE friends.user_id = ${userId} AND friends.status = 'padding'
-      `);
+    const response = await pool.query(
+      `SELECT * FROM friends WHERE status = 'padding' AND friend_id = ${userId}`
+    );
+
     return res.status(200).send(JSON.stringify(response.rowCount));
   } catch (error) {
     console.log(error);
