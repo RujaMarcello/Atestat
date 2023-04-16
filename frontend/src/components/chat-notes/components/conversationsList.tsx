@@ -3,9 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { ConversationDto } from '../../../generated/api';
 import api from '../../../utils/api';
 import Conversation from '../components/conversation';
+import { useChatProvider } from '../context/context';
+import { WINDOW } from '../window';
 
 const ConversationsList = () => {
   const [conversationsList, setConversationsList] = useState<ConversationDto[]>([]);
+  const { handleWindow, handleChatId } = useChatProvider();
 
   useEffect(() => {
     const handleConversationsList = async () => {
@@ -26,9 +29,13 @@ const ConversationsList = () => {
         conversationsList.map((el: ConversationDto) => {
           return (
             <Conversation
+              onClick={() => {
+                handleWindow(WINDOW.chat);
+                handleChatId(el.chatId.toString() || '');
+              }}
               lastLineText={el.lastLineText}
               lastMessageSentAt={el.lastSentMessage}
-              profilePictureUrl={'groupName' in el ? el.groupPicture || '' : el.profilePictureUrl || ''}
+              profilePictureUrl={el.profilePictureUrl || ''}
               name={'groupName' in el ? el.groupName || '' : el.firstName || ''}
               key={el.chatId}
             />
