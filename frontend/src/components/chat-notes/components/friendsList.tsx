@@ -2,6 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 
 import { FriendDto } from '../../../generated/api';
 import api from '../../../utils/api';
+import { useChatProvider } from '../context/context';
 import Friend from './friend';
 
 interface FriendsListProps {
@@ -10,7 +11,7 @@ interface FriendsListProps {
 
 const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
   const [friendsList, setFriendsList] = useState<FriendDto[]>([]);
-
+  const { isSortApplied } = useChatProvider();
   useEffect(() => {
     const count = friendsList.filter((friend) => friend.status === 'padding').length;
 
@@ -21,13 +22,24 @@ const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
     const handleFriendsList = async () => {
       try {
         const response = await api.friend.friendsListGet({ token: localStorage.getItem('token') || '' });
-        setFriendsList(response.data);
+        if (isSortApplied) {
+          const sortedResponse = response.data.sort((a, b) => {
+            if (a.status === 'padding' && b.status !== 'padding') {
+              return -1;
+            } else {
+              return 1;
+            }
+          });
+          setFriendsList(sortedResponse);
+        } else {
+          setFriendsList(response.data);
+        }
       } catch (error) {
         console.log(error);
       }
     };
     handleFriendsList();
-  }, []);
+  }, [isSortApplied]);
 
   const addFriendRequest = (id: number, chatId: number) => {
     const updatedData = friendsList.map((el: FriendDto) => {

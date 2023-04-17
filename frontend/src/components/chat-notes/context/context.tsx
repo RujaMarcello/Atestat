@@ -14,6 +14,8 @@ interface ChatContextInterface {
   handleChatId: (currentChatId: string) => void;
   currentUserData: CurrentUserData;
   handleCurrentUserData: (user: CurrentUserData) => void;
+  isSortApplied: boolean;
+  handleSort: (isSortApplied: boolean) => void;
 }
 
 const defaultChatValues: ChatContextInterface = {
@@ -26,6 +28,8 @@ const defaultChatValues: ChatContextInterface = {
     profilePictureUrl: '',
   },
   handleCurrentUserData(): void {},
+  isSortApplied: false,
+  handleSort(): void {},
 };
 
 export const ChatContext = createContext<ChatContextInterface>(defaultChatValues);
@@ -38,10 +42,14 @@ const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
   const [currentWindow, setCurrentWindow] = useState<WINDOW>(WINDOW.conversation);
   const [currentChatId, setCurrentChatId] = useState<string>('');
   const [currentUserData, setCurrentUserData] = useState<CurrentUserData>(defaultChatValues.currentUserData);
-
+  const [isSortApplied, setIsSortApplied] = useState<boolean>(false);
   const handleWindow = (window: WINDOW) => {
     setCurrentWindow(window);
     setCurrentChatId('');
+  };
+
+  const handleSort = (isSortUses: boolean) => {
+    setIsSortApplied(isSortUses);
   };
 
   const handleChatId = (chatId: string) => {
@@ -54,7 +62,16 @@ const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
 
   return (
     <ChatContext.Provider
-      value={{ currentUserData, handleCurrentUserData, currentChatId, handleChatId, currentWindow, handleWindow }}
+      value={{
+        handleSort,
+        isSortApplied,
+        currentUserData,
+        handleCurrentUserData,
+        currentChatId,
+        handleChatId,
+        currentWindow,
+        handleWindow,
+      }}
     >
       {children}
     </ChatContext.Provider>
