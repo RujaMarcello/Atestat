@@ -14,6 +14,8 @@ interface ChatContextInterface {
   handleChatId: (currentChatId: string) => void;
   currentUserData: CurrentUserData;
   handleCurrentUserData: (user: CurrentUserData) => void;
+  currentSearchedValue: string;
+  handleCurrentSearchedValue: (searchedValue: string) => void;
 }
 
 const defaultChatValues: ChatContextInterface = {
@@ -26,6 +28,8 @@ const defaultChatValues: ChatContextInterface = {
     profilePictureUrl: '',
   },
   handleCurrentUserData(): void {},
+  currentSearchedValue: '',
+  handleCurrentSearchedValue(): void {},
 };
 
 export const ChatContext = createContext<ChatContextInterface>(defaultChatValues);
@@ -38,7 +42,7 @@ const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
   const [currentWindow, setCurrentWindow] = useState<WINDOW>(WINDOW.conversation);
   const [currentChatId, setCurrentChatId] = useState<string>('');
   const [currentUserData, setCurrentUserData] = useState<CurrentUserData>(defaultChatValues.currentUserData);
-
+  const [currentSearchedValue, setCurrentSearchedValue] = useState<string>('');
   const handleWindow = (window: WINDOW) => {
     setCurrentWindow(window);
     setCurrentChatId('');
@@ -52,9 +56,23 @@ const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
     setCurrentUserData(user);
   };
 
+  const handleCurrentSearchedValue = (searchedValue: string) => {
+    console.log(searchedValue);
+    setCurrentSearchedValue(searchedValue);
+  };
+
   return (
     <ChatContext.Provider
-      value={{ currentUserData, handleCurrentUserData, currentChatId, handleChatId, currentWindow, handleWindow }}
+      value={{
+        currentSearchedValue,
+        handleCurrentSearchedValue,
+        currentUserData,
+        handleCurrentUserData,
+        currentChatId,
+        handleChatId,
+        currentWindow,
+        handleWindow,
+      }}
     >
       {children}
     </ChatContext.Provider>

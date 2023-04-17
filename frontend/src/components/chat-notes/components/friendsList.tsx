@@ -2,6 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 
 import { FriendDto } from '../../../generated/api';
 import api from '../../../utils/api';
+import { useChatProvider } from '../context/context';
 import Friend from './friend';
 
 interface FriendsListProps {
@@ -10,7 +11,7 @@ interface FriendsListProps {
 
 const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
   const [friendsList, setFriendsList] = useState<FriendDto[]>([]);
-
+  const { currentSearchedValue } = useChatProvider();
   useEffect(() => {
     const count = friendsList.filter((friend) => friend.status === 'padding').length;
 
@@ -48,14 +49,19 @@ const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
     <React.Fragment>
       {friendsList &&
         friendsList.map((element: FriendDto) => {
-          return (
-            <Friend
-              deleteUserFromList={deleteUserFromList}
-              addFriendRequest={addFriendRequest}
-              key={element.id}
-              data={element}
-            />
-          );
+          if (
+            (currentSearchedValue !== '' && element.firstName.includes(currentSearchedValue)) ||
+            element.lastName.includes(currentSearchedValue)
+          ) {
+            return (
+              <Friend
+                deleteUserFromList={deleteUserFromList}
+                addFriendRequest={addFriendRequest}
+                key={element.id}
+                data={element}
+              />
+            );
+          }
         })}
     </React.Fragment>
   );

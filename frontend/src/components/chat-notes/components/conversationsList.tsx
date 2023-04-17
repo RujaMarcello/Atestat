@@ -8,7 +8,7 @@ import { WINDOW } from '../window';
 
 const ConversationsList = () => {
   const [conversationsList, setConversationsList] = useState<ConversationDto[]>([]);
-  const { handleWindow, handleChatId, handleCurrentUserData } = useChatProvider();
+  const { handleWindow, handleChatId, handleCurrentUserData, currentSearchedValue } = useChatProvider();
 
   useEffect(() => {
     const handleConversationsList = async () => {
@@ -27,23 +27,28 @@ const ConversationsList = () => {
     <React.Fragment>
       {conversationsList &&
         conversationsList.map((el: ConversationDto) => {
-          return (
-            <Conversation
-              onClick={() => {
-                handleWindow(WINDOW.chat);
-                handleChatId(el.chatId.toString() || '');
-                handleCurrentUserData({
-                  name: el.firstName + ' ' + el.lastName,
-                  profilePictureUrl: el.profilePictureUrl || '',
-                });
-              }}
-              lastLineText={el.lastLineText}
-              lastMessageSentAt={el.lastSentMessage}
-              profilePictureUrl={el.profilePictureUrl || ''}
-              name={'groupName' in el ? el.groupName || '' : el.firstName + ' ' + el.lastName}
-              key={el.chatId}
-            />
-          );
+          if (
+            (currentSearchedValue !== '' && el.firstName?.includes(currentSearchedValue)) ||
+            el.lastName?.includes(currentSearchedValue)
+          ) {
+            return (
+              <Conversation
+                onClick={() => {
+                  handleWindow(WINDOW.chat);
+                  handleChatId(el.chatId.toString() || '');
+                  handleCurrentUserData({
+                    name: el.firstName + ' ' + el.lastName,
+                    profilePictureUrl: el.profilePictureUrl || '',
+                  });
+                }}
+                lastLineText={el.lastLineText}
+                lastMessageSentAt={el.lastSentMessage}
+                profilePictureUrl={el.profilePictureUrl || ''}
+                name={'groupName' in el ? el.groupName || '' : el.firstName + ' ' + el.lastName}
+                key={el.chatId}
+              />
+            );
+          }
         })}
     </React.Fragment>
   );

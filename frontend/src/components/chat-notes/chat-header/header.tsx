@@ -2,6 +2,7 @@ import { FilterOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
 import { FC, ReactNode, useState } from 'react';
 
+import { useChatProvider } from '../context/context';
 import styles from '../index.module.scss';
 interface ChatHeaderProps {
   children?: ReactNode;
@@ -9,9 +10,14 @@ interface ChatHeaderProps {
 
 const ChatHeader: FC<ChatHeaderProps> = () => {
   const [isPressed, setIsPressed] = useState(false);
-
+  const { currentSearchedValue } = useChatProvider();
+  const { handleCurrentSearchedValue } = useChatProvider();
   const handleFilterClick = () => {
     setIsPressed(!isPressed);
+  };
+
+  const handleInputValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleCurrentSearchedValue(event.target.value);
   };
 
   return (
@@ -19,6 +25,8 @@ const ChatHeader: FC<ChatHeaderProps> = () => {
       <h1 className={styles.title}>Chat</h1>
       <div className={styles.searchBar}>
         <Input
+          defaultValue={currentSearchedValue}
+          onChange={handleInputValue}
           size="large"
           style={{ borderRadius: '5x', marginTop: '15px' }}
           prefix={<SearchOutlined />}
