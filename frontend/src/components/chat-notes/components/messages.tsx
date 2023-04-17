@@ -35,8 +35,8 @@ const Messages: FC<any> = ({ messages }) => {
     };
   };
 
-  const messagesList = messages.map((el: MessageDto) => {
-    return <Message key={el.id} lineText={el.lineText} userId={el.userId} time={el.createAt} />;
+  const messagesList = messages.map((el: MessageDto, index: number) => {
+    return <Message key={index} lineText={el.lineText} userId={el.userId} time={el.createAt} />;
   });
 
   return (
