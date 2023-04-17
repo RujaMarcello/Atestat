@@ -1,14 +1,33 @@
 import React, { useEffect, useState } from 'react';
 
+import { useUserProvider } from '../../../context/User';
+import { MessageDto } from '../../../generated/api';
 import api from '../../../utils/api';
+import { socket } from '../../../utils/socket';
 import MessageChatInput from '../chat-footer/chatInput';
 import MessageChatHeader from '../chat-header/messageChatHeader';
 import { useChatProvider } from '../context/context';
 import Messages from './messages';
 
 const MessagesArea = () => {
+  const { user } = useUserProvider();
   const { currentChatId } = useChatProvider();
   const [messages, setMessages] = useState<any>([]);
+  useEffect(() => {
+    socket.emit('join-room', currentChatId);
+    socket.on('send-message', (data: any) => {
+      const message = {
+        chatId: data.chatId,
+        lineText: data.lineText,
+        userId: data.userId,
+        createAt: data.createAt,
+      };
+      setMessages((prevMessages: MessageDto[]) => [...prevMessages, message]);
+    });
+    return () => {
+      socket.disconnect();
+    };
+  }, [currentChatId]);
 
   useEffect(() => {
     const getMessages = async () => {
@@ -23,22 +42,18 @@ const MessagesArea = () => {
       }
     };
 
-    const fetchDataInterval = setInterval(getMessages, 3000);
-
-    return () => clearInterval(fetchDataInterval);
+    getMessages();
   }, [currentChatId]);
 
   const sendMessage = async (lineText: string) => {
-    const URL =
-      `${process.env.REACT_APP_BACKEND_BASE_URL}/send-message?` + new URLSearchParams({ chatId: currentChatId });
-    await fetch(URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        token: localStorage.getItem('token') || '',
-      },
-      body: JSON.stringify({ lineText: lineText }),
-    });
+    const message = {
+      lineText: lineText,
+      chatId: currentChatId,
+      userId: user?.id,
+      createAt: new Date().toISOString(),
+    };
+    setMessages((prevMessages: any) => [...prevMessages, message]);
+    socket.emit('send-message', message);
   };
 
   return (
