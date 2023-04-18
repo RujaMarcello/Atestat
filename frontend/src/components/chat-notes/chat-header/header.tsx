@@ -1,18 +1,15 @@
 import { FilterOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
-import { FC, ReactNode, useState } from 'react';
+import { FC, ReactNode } from 'react';
 
+import { useChatProvider } from '../context/context';
 import styles from '../index.module.scss';
 interface ChatHeaderProps {
   children?: ReactNode;
 }
 
 const ChatHeader: FC<ChatHeaderProps> = () => {
-  const [isPressed, setIsPressed] = useState(false);
-
-  const handleFilterClick = () => {
-    setIsPressed(!isPressed);
-  };
+  const { handleSort, isSortApplied } = useChatProvider();
 
   return (
     <div className={styles.conversationHeader}>
@@ -27,13 +24,13 @@ const ChatHeader: FC<ChatHeaderProps> = () => {
 
         <Button
           style={{
-            color: isPressed ? 'white' : '#AA14F0',
-            backgroundColor: isPressed ? '#AA14F0' : '#EEEEEE',
+            color: isSortApplied ? 'white' : '#AA14F0',
+            backgroundColor: isSortApplied ? '#AA14F0' : '#EEEEEE',
             marginLeft: '5px',
             marginTop: '18px',
           }}
           type="text"
-          onClick={handleFilterClick}
+          onClick={() => handleSort(!isSortApplied)}
           shape="circle"
           icon={<FilterOutlined />}
         />
