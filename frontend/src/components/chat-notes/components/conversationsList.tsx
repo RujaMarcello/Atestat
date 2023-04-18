@@ -28,8 +28,9 @@ const ConversationsList = () => {
       {conversationsList &&
         conversationsList.map((el: ConversationDto) => {
           if (
-            (currentSearchedValue !== '' && el.firstName?.includes(currentSearchedValue)) ||
-            el.lastName?.includes(currentSearchedValue)
+            (currentSearchedValue !== '' &&
+              el.firstName?.toLowerCase().includes(currentSearchedValue.toLocaleLowerCase())) ||
+            el.lastName?.toLowerCase().includes(currentSearchedValue.toLocaleLowerCase())
           ) {
             return (
               <Conversation

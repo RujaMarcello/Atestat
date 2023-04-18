@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 
 import { FriendDto } from '../../../generated/api';
 import api from '../../../utils/api';
+import { useChatProvider } from '../context/context';
 import AddFriends from './addFriends';
 
 const AddFriendsList = () => {
   const [addFriendList, setAddFriendList] = useState<FriendDto[]>([]);
-
+  const { currentSearchedValue } = useChatProvider();
   useEffect(() => {
     const handleAddFriendsList = async () => {
       try {
@@ -28,7 +29,13 @@ const AddFriendsList = () => {
     <React.Fragment>
       {addFriendList &&
         addFriendList.map((element: FriendDto) => {
-          return <AddFriends deleteUserFromList={deleteUserFromList} key={element.id} data={element} />;
+          if (
+            (currentSearchedValue !== '' &&
+              element.firstName.toLowerCase().includes(currentSearchedValue.toLowerCase())) ||
+            element.lastName.toLowerCase().includes(currentSearchedValue.toLowerCase())
+          ) {
+            return <AddFriends deleteUserFromList={deleteUserFromList} key={element.id} data={element} />;
+          }
         })}
     </React.Fragment>
   );

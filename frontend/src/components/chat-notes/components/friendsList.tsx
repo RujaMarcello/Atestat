@@ -18,7 +18,7 @@ const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
 
     handleFriendsRequestsCount(count);
   }, [friendsList, handleFriendsRequestsCount]);
-
+  useEffect(() => {}, [isSortApplied]);
   useEffect(() => {
     const handleFriendsList = async () => {
       try {
@@ -60,16 +60,17 @@ const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
   return (
     <React.Fragment>
       {friendsList &&
-        friendsList.map((element: FriendDto) => {
+        friendsList.map((element: FriendDto, index: number) => {
           if (
-            (currentSearchedValue !== '' && element.firstName.includes(currentSearchedValue)) ||
-            element.lastName.includes(currentSearchedValue)
+            (currentSearchedValue !== '' &&
+              element.firstName.toLowerCase().includes(currentSearchedValue.toLocaleLowerCase())) ||
+            element.lastName.toLowerCase().includes(currentSearchedValue.toLowerCase())
           ) {
             return (
               <Friend
                 deleteUserFromList={deleteUserFromList}
                 addFriendRequest={addFriendRequest}
-                key={element.id}
+                key={index}
                 data={element}
               />
             );
