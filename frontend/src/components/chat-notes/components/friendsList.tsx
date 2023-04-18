@@ -60,7 +60,7 @@ const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
   return (
     <React.Fragment>
       {friendsList &&
-        friendsList.map((element: FriendDto) => {
+        friendsList.map((element: FriendDto, index: number) => {
           if (
             (currentSearchedValue !== '' && element.firstName.includes(currentSearchedValue)) ||
             element.lastName.includes(currentSearchedValue)
@@ -69,7 +69,7 @@ const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
               <Friend
                 deleteUserFromList={deleteUserFromList}
                 addFriendRequest={addFriendRequest}
-                key={element.id}
+                key={index}
                 data={element}
               />
             );

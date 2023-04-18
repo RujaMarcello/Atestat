@@ -53,8 +53,8 @@ const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
     setCurrentChatId('');
   };
 
-  const handleSort = (isSortUses: boolean) => {
-    setIsSortApplied(isSortUses);
+  const handleSort = (isSortUsed: boolean) => {
+    setIsSortApplied(isSortUsed);
   };
 
   const handleChatId = (chatId: string) => {
