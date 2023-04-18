@@ -1,6 +1,19 @@
 const pool = require("./pool");
 const http = require("http");
-const server = http.createServer();
+const express = require("express");
+const cors = require("cors");
+const router = express.Router();
+
+const app = express();
+const server = http.createServer(app);
+
+router.get("/", (req, res) => {
+  res.send({ response: "Server is up and running." }).status(200);
+});
+
+app.use(cors());
+app.use(router);
+
 const io = require("socket.io")(server, {
   cors: {
     origin: [
