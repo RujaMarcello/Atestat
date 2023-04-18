@@ -2,6 +2,7 @@ const pool = require("../pool");
 const router = require("express").Router();
 const { verifyToken } = require("../middleware/auth");
 const {
+  friendRequestAlreadyExisting,
   getAllConversationsByUserId,
   isGroupConversation,
   isConversationHistoryEmpty,
@@ -10,14 +11,21 @@ const {
 router.post("/add-friend", verifyToken, async (req, res) => {
   const { friendId } = req.query;
   const userId = req.user.id;
+  const friendRequestExisting = await friendRequestAlreadyExisting(
+    friendId,
+    userId
+  );
+
   try {
-    await pool.query(
-      `INSERT INTO friends (user_id, friend_id) VALUES (${userId}, ${friendId})`
-    );
+    if (!!friendRequestExisting === false) {
+      await pool.query(
+        `INSERT INTO friends (user_id, friend_id) VALUES (${userId}, ${friendId})`
+      );
+    }
     return res.status(200).send("Friend request sent");
   } catch (error) {
     console.log(error);
-    return res.status(409).send("Friend request allready submited");
+    return res.status(500).send({ message: "Server error" });
   }
 });
 
