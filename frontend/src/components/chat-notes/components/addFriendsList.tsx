@@ -1,3 +1,4 @@
+import { Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 import { FriendDto } from '../../../generated/api';
@@ -7,15 +8,18 @@ import AddFriends from './addFriends';
 
 const AddFriendsList = () => {
   const [addFriendList, setAddFriendList] = useState<FriendDto[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { currentSearchedValue } = useChatProvider();
   useEffect(() => {
     const handleAddFriendsList = async () => {
       try {
+        setIsLoading(true);
         const response = await api.friend.addFriendListGet({ token: localStorage.getItem('token') || '' });
         setAddFriendList(response.data);
       } catch (error) {
         console.log(error);
       }
+      setIsLoading(false);
     };
     handleAddFriendsList();
   }, []);
@@ -27,7 +31,10 @@ const AddFriendsList = () => {
 
   return (
     <React.Fragment>
-      {addFriendList &&
+      {isLoading === true ? (
+        <Spin size="large" />
+      ) : (
+        addFriendList &&
         addFriendList.map((element: FriendDto) => {
           if (
             (currentSearchedValue !== '' &&
@@ -36,7 +43,8 @@ const AddFriendsList = () => {
           ) {
             return <AddFriends deleteUserFromList={deleteUserFromList} key={element.id} data={element} />;
           }
-        })}
+        })
+      )}
     </React.Fragment>
   );
 };

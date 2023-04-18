@@ -1,3 +1,4 @@
+import { Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 import { ConversationDto } from '../../../generated/api';
@@ -9,23 +10,29 @@ import { WINDOW } from '../window';
 const ConversationsList = () => {
   const [conversationsList, setConversationsList] = useState<ConversationDto[]>([]);
   const { handleWindow, handleChatId, handleCurrentUserData, currentSearchedValue } = useChatProvider();
-
+  const [loading, setLoading] = useState<boolean>(false);
   useEffect(() => {
     const handleConversationsList = async () => {
       try {
+        setLoading(true);
         const response = await api.friend.getAllConversationsGet({ token: localStorage.getItem('token') || '' });
-
         setConversationsList(response.data);
       } catch (error) {
+        setLoading(false);
         console.log(error);
       }
+      setLoading(false);
     };
+
     handleConversationsList();
   }, []);
 
   return (
     <React.Fragment>
-      {conversationsList &&
+      {loading === true ? (
+        <Spin size="large" />
+      ) : (
+        conversationsList &&
         conversationsList.map((el: ConversationDto) => {
           if (
             (currentSearchedValue !== '' &&
@@ -50,7 +57,8 @@ const ConversationsList = () => {
               />
             );
           }
-        })}
+        })
+      )}
     </React.Fragment>
   );
 };
