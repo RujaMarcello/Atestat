@@ -1,6 +1,7 @@
 {
   "scripts": {
     "dev": "nodemon server.js",
+    "dev-socket": "nodemon socket.js",
     "build": "npm i"
   },
   "dependencies": {
