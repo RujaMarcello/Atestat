@@ -14,6 +14,8 @@ interface ChatContextInterface {
   handleChatId: (currentChatId: string) => void;
   currentUserData: CurrentUserData;
   handleCurrentUserData: (user: CurrentUserData) => void;
+  currentSearchedValue: string;
+  handleCurrentSearchedValue: (searchedValue: string) => void;
   isSortApplied: boolean;
   handleSort: (isSortApplied: boolean) => void;
 }
@@ -28,6 +30,8 @@ const defaultChatValues: ChatContextInterface = {
     profilePictureUrl: '',
   },
   handleCurrentUserData(): void {},
+  currentSearchedValue: '',
+  handleCurrentSearchedValue(): void {},
   isSortApplied: false,
   handleSort(): void {},
 };
@@ -42,6 +46,7 @@ const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
   const [currentWindow, setCurrentWindow] = useState<WINDOW>(WINDOW.conversation);
   const [currentChatId, setCurrentChatId] = useState<string>('');
   const [currentUserData, setCurrentUserData] = useState<CurrentUserData>(defaultChatValues.currentUserData);
+  const [currentSearchedValue, setCurrentSearchedValue] = useState<string>('');
   const [isSortApplied, setIsSortApplied] = useState<boolean>(false);
   const handleWindow = (window: WINDOW) => {
     setCurrentWindow(window);
@@ -60,9 +65,16 @@ const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
     setCurrentUserData(user);
   };
 
+  const handleCurrentSearchedValue = (searchedValue: string) => {
+    console.log(searchedValue);
+    setCurrentSearchedValue(searchedValue);
+  };
+
   return (
     <ChatContext.Provider
       value={{
+        currentSearchedValue,
+        handleCurrentSearchedValue,
         handleSort,
         isSortApplied,
         currentUserData,

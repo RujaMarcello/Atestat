@@ -11,6 +11,7 @@ interface FriendsListProps {
 
 const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
   const [friendsList, setFriendsList] = useState<FriendDto[]>([]);
+  const { currentSearchedValue } = useChatProvider();
   const { isSortApplied } = useChatProvider();
   useEffect(() => {
     const count = friendsList.filter((friend) => friend.status === 'padding').length;
@@ -60,14 +61,19 @@ const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
     <React.Fragment>
       {friendsList &&
         friendsList.map((element: FriendDto) => {
-          return (
-            <Friend
-              deleteUserFromList={deleteUserFromList}
-              addFriendRequest={addFriendRequest}
-              key={element.id}
-              data={element}
-            />
-          );
+          if (
+            (currentSearchedValue !== '' && element.firstName.includes(currentSearchedValue)) ||
+            element.lastName.includes(currentSearchedValue)
+          ) {
+            return (
+              <Friend
+                deleteUserFromList={deleteUserFromList}
+                addFriendRequest={addFriendRequest}
+                key={element.id}
+                data={element}
+              />
+            );
+          }
         })}
     </React.Fragment>
   );
