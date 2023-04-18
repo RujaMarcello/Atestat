@@ -1,8 +1,10 @@
+import { Spin } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
 
 import { FriendDto } from '../../../generated/api';
 import api from '../../../utils/api';
 import { useChatProvider } from '../context/context';
+import styles from '../index.module.scss';
 import Friend from './friend';
 
 interface FriendsListProps {
@@ -13,6 +15,7 @@ const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
   const [friendsList, setFriendsList] = useState<FriendDto[]>([]);
   const { currentSearchedValue } = useChatProvider();
   const { isSortApplied } = useChatProvider();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   useEffect(() => {
     const count = friendsList.filter((friend) => friend.status === 'padding').length;
 
@@ -22,6 +25,7 @@ const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
   useEffect(() => {
     const handleFriendsList = async () => {
       try {
+        setIsLoading(true);
         const response = await api.friend.friendsListGet({ token: localStorage.getItem('token') || '' });
         if (isSortApplied) {
           const sortedResponse = response.data.sort((a, b) => {
@@ -38,6 +42,7 @@ const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
       } catch (error) {
         console.log(error);
       }
+      setIsLoading(false);
     };
     handleFriendsList();
   }, [isSortApplied]);
@@ -59,7 +64,10 @@ const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
 
   return (
     <React.Fragment>
-      {friendsList &&
+      {isLoading === true ? (
+        <Spin className={styles.loadingSpin} size="large" />
+      ) : (
+        friendsList &&
         friendsList.map((element: FriendDto, index: number) => {
           if (
             (currentSearchedValue !== '' &&
@@ -75,7 +83,8 @@ const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
               />
             );
           }
-        })}
+        })
+      )}
     </React.Fragment>
   );
 };
