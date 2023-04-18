@@ -5,6 +5,7 @@ import { ConversationDto } from '../../../generated/api';
 import api from '../../../utils/api';
 import Conversation from '../components/conversation';
 import { useChatProvider } from '../context/context';
+import styles from '../index.module.scss';
 import { WINDOW } from '../window';
 
 const ConversationsList = () => {
@@ -30,7 +31,7 @@ const ConversationsList = () => {
   return (
     <React.Fragment>
       {loading === true ? (
-        <Spin size="large" />
+        <Spin className={styles.loadingSpin} size="large" />
       ) : (
         conversationsList &&
         conversationsList.map((el: ConversationDto) => {

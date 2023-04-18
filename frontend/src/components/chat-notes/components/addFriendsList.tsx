@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { FriendDto } from '../../../generated/api';
 import api from '../../../utils/api';
 import { useChatProvider } from '../context/context';
+import styles from '../index.module.scss';
 import AddFriends from './addFriends';
 
 const AddFriendsList = () => {
@@ -32,7 +33,7 @@ const AddFriendsList = () => {
   return (
     <React.Fragment>
       {isLoading === true ? (
-        <Spin size="large" />
+        <Spin className={styles.loadingSpin} size="large" />
       ) : (
         addFriendList &&
         addFriendList.map((element: FriendDto) => {

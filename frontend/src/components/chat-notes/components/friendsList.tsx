@@ -4,6 +4,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { FriendDto } from '../../../generated/api';
 import api from '../../../utils/api';
 import { useChatProvider } from '../context/context';
+import styles from '../index.module.scss';
 import Friend from './friend';
 
 interface FriendsListProps {
@@ -64,7 +65,7 @@ const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
   return (
     <React.Fragment>
       {isLoading === true ? (
-        <Spin size="large" />
+        <Spin className={styles.loadingSpin} size="large" />
       ) : (
         friendsList &&
         friendsList.map((element: FriendDto, index: number) => {
