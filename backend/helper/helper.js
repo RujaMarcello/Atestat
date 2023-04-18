@@ -45,6 +45,7 @@ async function getAllConversationsByUserId(userId) {
     return usersChatRelations.rows;
   } catch (error) {
     console.log(error);
+    return res.status(500).send({ message: "Server error" });
   }
 }
 
@@ -54,6 +55,20 @@ async function isGroupConversation(myChatId, userId) {
       `SELECT * FROM chat_relations WHERE chat_id = ${myChatId} AND user_id != ${userId}`
     );
     return isGroup.rows;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function friendRequestAlreadyExisting(friendId, userId) {
+  try {
+    const getFriendRequestByFriendIdAndUserId =
+      await pool.query(`SELECT * FROM friends
+    WHERE friend_id = ${userId} AND user_id = ${friendId}`);
+    if (getFriendRequestByFriendIdAndUserId.rowCount === 0) {
+      return undefined;
+    }
+    return getFriendRequestByFriendIdAndUserId.rows;
   } catch (error) {
     console.log(error);
   }
@@ -80,4 +95,5 @@ module.exports = {
   getAllConversationsByUserId,
   isGroupConversation,
   isConversationHistoryEmpty,
+  friendRequestAlreadyExisting,
 };
