@@ -34,7 +34,6 @@ const defaultChatValues: ChatContextInterface = {
   handleCurrentSearchedValue(): void {},
   isSortApplied: false,
   handleSort(): void {},
-
 };
 
 export const ChatContext = createContext<ChatContextInterface>(defaultChatValues);

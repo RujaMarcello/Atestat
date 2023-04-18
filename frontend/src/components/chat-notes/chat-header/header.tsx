@@ -1,6 +1,6 @@
 import { FilterOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
-import { FC, ReactNode } from 'react';
+import { FC, ReactNode, useState } from 'react';
 
 import { useChatProvider } from '../context/context';
 import styles from '../index.module.scss';
@@ -9,7 +9,6 @@ interface ChatHeaderProps {
 }
 
 const ChatHeader: FC<ChatHeaderProps> = () => {
-
   const [isPressed, setIsPressed] = useState(false);
   const { currentSearchedValue } = useChatProvider();
   const { handleCurrentSearchedValue } = useChatProvider();
