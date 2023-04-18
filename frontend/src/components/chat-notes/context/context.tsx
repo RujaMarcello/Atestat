@@ -16,6 +16,8 @@ interface ChatContextInterface {
   handleCurrentUserData: (user: CurrentUserData) => void;
   currentSearchedValue: string;
   handleCurrentSearchedValue: (searchedValue: string) => void;
+  isSortApplied: boolean;
+  handleSort: (isSortApplied: boolean) => void;
 }
 
 const defaultChatValues: ChatContextInterface = {
@@ -30,6 +32,9 @@ const defaultChatValues: ChatContextInterface = {
   handleCurrentUserData(): void {},
   currentSearchedValue: '',
   handleCurrentSearchedValue(): void {},
+  isSortApplied: false,
+  handleSort(): void {},
+
 };
 
 export const ChatContext = createContext<ChatContextInterface>(defaultChatValues);
@@ -43,9 +48,14 @@ const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
   const [currentChatId, setCurrentChatId] = useState<string>('');
   const [currentUserData, setCurrentUserData] = useState<CurrentUserData>(defaultChatValues.currentUserData);
   const [currentSearchedValue, setCurrentSearchedValue] = useState<string>('');
+  const [isSortApplied, setIsSortApplied] = useState<boolean>(false);
   const handleWindow = (window: WINDOW) => {
     setCurrentWindow(window);
     setCurrentChatId('');
+  };
+
+  const handleSort = (isSortUses: boolean) => {
+    setIsSortApplied(isSortUses);
   };
 
   const handleChatId = (chatId: string) => {
@@ -66,6 +76,8 @@ const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
       value={{
         currentSearchedValue,
         handleCurrentSearchedValue,
+        handleSort,
+        isSortApplied,
         currentUserData,
         handleCurrentUserData,
         currentChatId,
