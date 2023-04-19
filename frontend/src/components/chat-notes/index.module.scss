@@ -214,13 +214,16 @@
 .message {
   display: flex;
   max-width: 300px;
-  white-space: pre-line;
   background-color: white;
   padding: 10px;
   border-radius: 10px;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .sentHoure {
+  word-break: normal;
+
   display: flex;
   justify-content: flex-end;
   flex-direction: column;
