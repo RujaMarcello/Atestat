@@ -13,7 +13,10 @@ const MessagesArea = () => {
   const { user } = useUserProvider();
   const { currentChatId } = useChatProvider();
   const [messages, setMessages] = useState<any>([]);
+
   useEffect(() => {
+    socket.connect();
+
     socket.emit('join-room', currentChatId);
     socket.on('send-message', (data: any) => {
       const message = {
