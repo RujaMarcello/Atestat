@@ -217,18 +217,18 @@
   background-color: white;
   padding: 10px;
   border-radius: 10px;
-  word-wrap: break-word;
-  word-break: break-all;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
-
 .sentHoure {
+  word-break: normal;
+
   display: flex;
   justify-content: flex-end;
   flex-direction: column;
   margin-left: 15px;
   font-size: 0.7rem;
-  word-break: normal;
 }
 
 .messageChatFooterContainer {
