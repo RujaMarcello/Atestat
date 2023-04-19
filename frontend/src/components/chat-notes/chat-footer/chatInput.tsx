@@ -16,7 +16,7 @@ const MessageChatInput: FC<MessageChatInputProps> = ({ onSend }) => {
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (lineText === '') {
+    if (!lineText.trim()) {
       return;
     }
     if (event.key === 'Enter') {
