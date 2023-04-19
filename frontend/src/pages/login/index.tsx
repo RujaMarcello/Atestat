@@ -9,6 +9,7 @@ import api from '../../utils/api';
 
 const LoginPage: FC<{ requestedLocation?: string | null }> = ({ requestedLocation }) => {
   const [isSuccessfully, setIsSuccessfuly] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const { setToken } = useUserProvider();
   const resetState = useCallback(() => {
@@ -16,6 +17,7 @@ const LoginPage: FC<{ requestedLocation?: string | null }> = ({ requestedLocatio
   }, []);
   const handleFormSubmit = async (form: FormState) => {
     try {
+      setIsLoading(true);
       const response = await api.auth.loginPost({
         loginRequest: {
           email: form.email,
@@ -29,13 +31,19 @@ const LoginPage: FC<{ requestedLocation?: string | null }> = ({ requestedLocatio
     } catch (error) {
       setIsSuccessfuly(false);
     }
+    setIsLoading(false);
   };
   return (
     <>
       <Helmet>
         <title>Login</title>
       </Helmet>
-      <LoginForm resetState={resetState} isSuccessfully={isSuccessfully} onSubmit={handleFormSubmit} />
+      <LoginForm
+        loading={isLoading}
+        resetState={resetState}
+        isSuccessfully={isSuccessfully}
+        onSubmit={handleFormSubmit}
+      />
     </>
   );
 };
