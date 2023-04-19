@@ -100,7 +100,7 @@ const LoginForm: FC<LoginFormProps> = ({ resetState, isSuccessfully, loading, on
                 }),
               ]}
             >
-              <Button className={styles.buttonStyles} htmlType="submit">
+              <Button loading={loading} className={styles.buttonStyles} htmlType="submit">
                 Submit
               </Button>
             </Form.Item>
