@@ -12,10 +12,10 @@ import Messages from './messages';
 const MessagesArea = () => {
   const { user } = useUserProvider();
   const { currentChatId } = useChatProvider();
-  const [messages, setMessages] = useState<any>([]);
+  const [messages, setMessages] = useState<MessageDto[]>([]);
   useEffect(() => {
     socket.emit('join-room', currentChatId);
-    socket.on('send-message', (data: any) => {
+    socket.on('send-message', (data: MessageDto) => {
       const message = {
         chatId: data.chatId,
         lineText: data.lineText,
@@ -49,10 +49,12 @@ const MessagesArea = () => {
     const message = {
       lineText: lineText,
       chatId: currentChatId,
-      userId: user?.id,
+      userId: user?.id !== undefined ? user.id.toString() : undefined,
       createAt: new Date().toISOString(),
     };
-    setMessages((prevMessages: any) => [...prevMessages, message]);
+    setMessages((prevMessages: MessageDto[]) => {
+      return [...prevMessages, message];
+    });
     socket.emit('send-message', message);
   };
 
