@@ -214,11 +214,13 @@
 .message {
   display: flex;
   max-width: 300px;
-  white-space: pre-line;
   background-color: white;
   padding: 10px;
   border-radius: 10px;
+  word-wrap: break-word;
+  word-break: break-all;
 }
+
 
 .sentHoure {
   display: flex;
@@ -226,6 +228,8 @@
   flex-direction: column;
   margin-left: 15px;
   font-size: 0.7rem;
+  word-break: normal;
+
 }
 
 .messageChatFooterContainer {
