@@ -791,6 +791,7 @@
         "required": [
           "chatId",
           "createAt",
+          "id",
           "lineText",
           "userId"
         ],
@@ -812,7 +813,7 @@
             "minLength": 1
           },
           "userId": {
-            "type": "string | undefined",
+            "type": "string",
             "minLength": 1
           }
         },

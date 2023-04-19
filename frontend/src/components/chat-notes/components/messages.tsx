@@ -4,10 +4,10 @@ import { MessageDto } from '../../../generated/api';
 import styles from '../index.module.scss';
 import Message from './message';
 interface MessagesProps {
-  messages: MessageDto[];
+  messages: any;
 }
 
-const Messages: FC<MessagesProps> = ({ messages }) => {
+const Messages: FC<any> = ({ messages }) => {
   const [showScrollbar, setShowScrollbar] = useState<boolean>(true);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const allMessagesRef = useRef<HTMLDivElement | null>(null);
@@ -36,8 +36,7 @@ const Messages: FC<MessagesProps> = ({ messages }) => {
   };
 
   const messagesList = messages.map((el: MessageDto, index: number) => {
-    const userId = el.userId ? el.userId.toString() : '';
-    return <Message key={index} lineText={el.lineText} userId={userId} time={el.createAt} />;
+    return <Message key={index} lineText={el.lineText} userId={el.userId} time={el.createAt} />;
   });
 
   return (

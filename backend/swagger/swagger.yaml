@@ -214,6 +214,7 @@ components:
       required:
       - chatId
       - createAt
+      - id
       - lineText
       - userId
       properties:
@@ -230,7 +231,7 @@ components:
           type: string
           minLength:  1
         userId:
-          type: string | undefined
+          type: string
           minLength:  1
       example:
         chatId: string

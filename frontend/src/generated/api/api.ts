@@ -210,7 +210,7 @@ export interface MessageDto {
      * @type {number}
      * @memberof MessageDto
      */
-    'id'?: number;
+    'id': number;
     /**
      * 
      * @type {string}
@@ -219,10 +219,10 @@ export interface MessageDto {
     'lineText': string;
     /**
      * 
-     * @type {String | undefined}
+     * @type {string}
      * @memberof MessageDto
      */
-    'userId': String | undefined;
+    'userId': string;
 }
 /**
  * 
