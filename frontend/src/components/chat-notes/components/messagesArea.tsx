@@ -12,13 +12,13 @@ import Messages from './messages';
 const MessagesArea = () => {
   const { user } = useUserProvider();
   const { currentChatId } = useChatProvider();
-  const [messages, setMessages] = useState<any>([]);
+  const [messages, setMessages] = useState<MessageDto[]>([]);
 
   useEffect(() => {
     socket.connect();
 
     socket.emit('join-room', currentChatId);
-    socket.on('send-message', (data: any) => {
+    socket.on('send-message', (data: MessageDto) => {
       const message = {
         chatId: data.chatId,
         lineText: data.lineText,
@@ -49,13 +49,13 @@ const MessagesArea = () => {
   }, [currentChatId]);
 
   const sendMessage = async (lineText: string) => {
-    const message = {
-      lineText: lineText,
+    const message: MessageDto = {
       chatId: currentChatId,
-      userId: user?.id,
+      lineText: lineText,
+      userId: user?.id ?? null,
       createAt: new Date().toISOString(),
     };
-    setMessages((prevMessages: any) => [...prevMessages, message]);
+    setMessages((prevMessages: MessageDto[]) => [...prevMessages, message]);
     socket.emit('send-message', message);
   };
 

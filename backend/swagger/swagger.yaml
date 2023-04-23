@@ -214,7 +214,6 @@ components:
       required:
       - chatId
       - createAt
-      - id
       - lineText
       - userId
       properties:
@@ -231,14 +230,15 @@ components:
           type: string
           minLength:  1
         userId:
-          type: string
+          type: integer
           minLength:  1
+          nullable: true
       example:
         chatId: string
         createAt: string
         id: string
         lineText: string
-        userId: string
+        userId: null
     ArrayOfMessages:
       type: array
       items:
