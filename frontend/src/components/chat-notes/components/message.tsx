@@ -5,12 +5,12 @@ import shortTime from '../../../utils/time';
 import styles from '../index.module.scss';
 interface MessageProps {
   lineText: string;
-  userId: string;
+  userId: number | null;
   time: string;
 }
 const Message: FC<MessageProps> = ({ lineText, userId, time }) => {
   const { user } = useUserProvider();
-  const sentByMe = user && user.id?.toString() === userId.toString();
+  const sentByMe = userId && user && user.id?.toString() === userId.toString();
 
   return (
     <div className={sentByMe ? styles.textMessageContainerUser : styles.textMessageContainerPeople}>

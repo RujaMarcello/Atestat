@@ -4,10 +4,10 @@ import { MessageDto } from '../../../generated/api';
 import styles from '../index.module.scss';
 import Message from './message';
 interface MessagesProps {
-  messages: any;
+  messages: MessageDto[];
 }
 
-const Messages: FC<any> = ({ messages }) => {
+const Messages: FC<MessagesProps> = ({ messages }) => {
   const [showScrollbar, setShowScrollbar] = useState<boolean>(true);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const allMessagesRef = useRef<HTMLDivElement | null>(null);
