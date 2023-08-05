@@ -1,6 +1,6 @@
 import { ArrowRightOutlined, CameraOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
-import { FC, useState } from 'react';
+import { ChangeEvent, FC, useState } from 'react';
 
 import styles from '../index.module.scss';
 
@@ -11,7 +11,7 @@ interface MessageChatInputProps {
 const MessageChatInput: FC<MessageChatInputProps> = ({ onSend }) => {
   const [lineText, setLineText] = useState<string>('');
 
-  const handleInputValue = (event: any) => {
+  const handleInputValue = (event: ChangeEvent<HTMLInputElement>) => {
     setLineText(event.target.value);
   };
 

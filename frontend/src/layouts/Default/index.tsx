@@ -1,21 +1,18 @@
 import { Layout } from 'antd';
-import { FC, ReactNode, useState } from 'react';
+import { FC, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
-import AdminDashboard from '../../components/admin-menu';
 import BottomDashboard from '../../components/bottom-menu';
 import HeaderContent from '../../components/header-content';
-import SuperAdminDashboard from '../../components/superadmin-menu';
-import UserDashboard from '../../components/user-menu';
-import { Role } from '../../context/Role';
+import AdminDashboard from '../../components/menu/admin-menu';
+import SuperAdminDashboard from '../../components/menu/superadmin-menu';
+import UserDashboard from '../../components/menu/user-menu';
+import { Role } from '../../context/Role/Role';
 import { ReactComponent as Logo } from '../../pages/svg/logo.svg';
+import { LayoutInterface } from '../map';
 import styles from './index.module.scss';
 
-interface DefaultLayoutProps {
-  children?: ReactNode;
-}
-
-const DefaultLayout: FC<DefaultLayoutProps> = ({ children }) => {
+const DefaultLayout: FC<LayoutInterface> = ({ children }) => {
   const [collappsed, setCollapsed] = useState(false);
 
   return (

@@ -1,11 +1,11 @@
 import { Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 
-import { FriendDto } from '../../../generated/api';
-import api from '../../../utils/api';
-import { useChatProvider } from '../context/context';
-import styles from '../index.module.scss';
-import AddFriends from './addFriends';
+import { FriendDto } from '../../../../generated/api';
+import api from '../../../../utils/api';
+import { useChatProvider } from '../../context/context';
+import styles from '../../index.module.scss';
+import AddFriends from '../AddFriends/addFriends';
 
 const AddFriendsList = () => {
   const [addFriendList, setAddFriendList] = useState<FriendDto[]>([]);

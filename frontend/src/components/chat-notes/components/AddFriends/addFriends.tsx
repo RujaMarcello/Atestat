@@ -2,12 +2,8 @@ import { UserAddOutlined } from '@ant-design/icons';
 import { Avatar, Button } from 'antd';
 import { FC } from 'react';
 
-import { FriendDto } from '../../../generated/api';
-import styles from '../index.module.scss';
-interface AddFriendsProps {
-  data: FriendDto;
-  deleteUserFromList: (id: number) => void;
-}
+import styles from '../../index.module.scss';
+import { AddFriendsProps } from './map';
 const AddFriends: FC<AddFriendsProps> = ({ data, deleteUserFromList }) => {
   const sendFriendRequest = async (id: string) => {
     const URL =

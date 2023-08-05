@@ -1,10 +1,11 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 
-import { MessageDto } from '../../../generated/api';
-import styles from '../index.module.scss';
-import Message from './message';
+import { MessageDto } from '../../../../generated/api';
+import styles from '../../index.module.scss';
+import Message from '../Message/message';
+//Solving
 interface MessagesProps {
-  messages: any;
+  messages: ReactNode;
 }
 
 const Messages: FC<any> = ({ messages }) => {

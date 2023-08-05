@@ -4,23 +4,13 @@ import { Link } from 'react-router-dom';
 
 import BackgroundLogin from '../background-login';
 import styles from './index.module.scss';
+import { LoginFormProps } from './map';
+import { LoginFormState } from './map';
 
-export type FormState = {
-  email: string;
-  password: string;
-};
-
-const initialValues: FormState = {
+const initialValues: LoginFormState = {
   email: '',
   password: '',
 };
-
-interface LoginFormProps {
-  loading?: boolean;
-  onSubmit?: (formState: FormState) => void;
-  isSuccessfully: boolean | null;
-  resetState: any;
-}
 
 const LoginForm: FC<LoginFormProps> = ({ resetState, isSuccessfully, loading, onSubmit }) => {
   const [form] = Form.useForm();

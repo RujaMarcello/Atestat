@@ -1,12 +1,8 @@
-import { FC, ReactNode } from 'react';
+import { FC } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import styles from './index.module.scss';
-
-interface BackgroundLoginProps {
-  children?: ReactNode;
-}
-
+import { BackgroundLoginProps } from './map';
 const BackgroundLogin: FC<BackgroundLoginProps> = ({ children }) => {
   return (
     <>

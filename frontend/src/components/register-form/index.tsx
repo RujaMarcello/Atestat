@@ -6,15 +6,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import BackgroundLogin from '../background-login';
 import styles from './index.module.scss';
+import { RegisterFormState } from './map';
 
-export type FormState = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-};
-
-const initialValues: FormState = {
+const initialValues: RegisterFormState = {
   firstName: '',
   lastName: '',
   email: '',

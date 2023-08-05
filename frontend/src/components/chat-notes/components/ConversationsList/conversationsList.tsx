@@ -1,12 +1,12 @@
 import { Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 
-import { ConversationDto } from '../../../generated/api';
-import api from '../../../utils/api';
-import Conversation from '../components/conversation';
-import { useChatProvider } from '../context/context';
-import styles from '../index.module.scss';
-import { WINDOW } from '../window';
+import { ConversationDto } from '../../../../generated/api';
+import api from '../../../../utils/api';
+import { useChatProvider } from '../../context/context';
+import styles from '../../index.module.scss';
+import { WINDOW } from '../../window';
+import Conversation from '../Conversation/conversation';
 
 const ConversationsList = () => {
   const [conversationsList, setConversationsList] = useState<ConversationDto[]>([]);

@@ -1,12 +1,10 @@
 import { Layout } from 'antd';
-import { FC, ReactNode } from 'react';
+import { FC } from 'react';
 import { Outlet } from 'react-router-dom';
 
-interface EmptyLayoutProps {
-  children?: ReactNode;
-}
+import { LayoutInterface } from '../map';
 
-const EmptyLayout: FC<EmptyLayoutProps> = ({ children }) => {
+const EmptyLayout: FC<LayoutInterface> = ({ children }) => {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Layout.Content>{children || <Outlet />}</Layout.Content>

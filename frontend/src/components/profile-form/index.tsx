@@ -2,20 +2,12 @@ import { Button, Form, Input, Select } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
-import { useUserProvider } from '../../context/User';
+import { useUserProvider } from '../../context/User/User';
 import { UserDto } from '../../generated/api';
 import api from '../../utils/api';
 import ProfilePicture from '../profile-picture';
 import styles from './index.module.scss';
-export type ProfileFormState = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  city: string;
-  state: string;
-  country: string;
-  profilePictureUrl: string;
-};
+import { ProfileFormState } from './map';
 
 const initialValues: ProfileFormState = {
   firstName: '',

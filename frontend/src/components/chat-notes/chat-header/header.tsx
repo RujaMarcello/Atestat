@@ -4,14 +4,13 @@ import { FC, ReactNode, useState } from 'react';
 
 import { useChatProvider } from '../context/context';
 import styles from '../index.module.scss';
-interface ChatHeaderProps {
-  children?: ReactNode;
-}
+import { ChatHeaderProps } from './map';
 
 const ChatHeader: FC<ChatHeaderProps> = () => {
   const [isPressed, setIsPressed] = useState(false);
   const { currentSearchedValue } = useChatProvider();
   const { handleCurrentSearchedValue } = useChatProvider();
+
   const handleFilterClick = () => {
     setIsPressed(!isPressed);
   };

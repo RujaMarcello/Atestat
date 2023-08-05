@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
-import { useUserProvider } from '../../../context/User';
-import { MessageDto } from '../../../generated/api';
-import api from '../../../utils/api';
-import { socket } from '../../../utils/socket';
-import MessageChatInput from '../chat-footer/chatInput';
-import MessageChatHeader from '../chat-header/messageChatHeader';
-import { useChatProvider } from '../context/context';
-import Messages from './messages';
+import { useUserProvider } from '../../../../context/User/User';
+import { MessageDto } from '../../../../generated/api';
+import api from '../../../../utils/api';
+import { socket } from '../../../../utils/socket';
+import MessageChatInput from '../../chat-footer/chatInput';
+import MessageChatHeader from '../../chat-header/messageChatHeader';
+import { useChatProvider } from '../../context/context';
+import Messages from '../Messages/messages';
 
 const MessagesArea = () => {
   const { user } = useUserProvider();

@@ -1,24 +1,11 @@
-import { Avatar, Badge } from 'antd';
+import { Avatar } from 'antd';
 import { FC } from 'react';
 
-import shortTime from '../../../utils/time';
-import styles from '../index.module.scss';
+import shortTime from '../../../../utils/time';
+import styles from '../../index.module.scss';
+import { ConversationProps } from './map';
 
-interface ConvarasationProps {
-  name: string;
-  lastMessageSentAt: string;
-  profilePictureUrl: string;
-  lastLineText: string;
-  onClick?: () => void;
-}
-
-const Conversation: FC<ConvarasationProps> = ({
-  lastMessageSentAt,
-  profilePictureUrl,
-  name,
-  lastLineText,
-  onClick,
-}) => {
+const Conversation: FC<ConversationProps> = ({ lastMessageSentAt, profilePictureUrl, name, lastLineText, onClick }) => {
   const handleClick = () => {
     if (onClick) {
       onClick();

@@ -2,16 +2,10 @@ import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { Avatar, Button } from 'antd';
 import { FC } from 'react';
 
-import { FriendDto } from '../../../generated/api';
-import { useChatProvider } from '../context/context';
-import styles from '../index.module.scss';
-import { WINDOW } from '../window';
-
-interface FriendProps {
-  addFriendRequest: (id: number, chatId: number) => void;
-  deleteUserFromList: (id: number) => void;
-  data: FriendDto;
-}
+import { useChatProvider } from '../../context/context';
+import styles from '../../index.module.scss';
+import { WINDOW } from '../../window';
+import { FriendProps } from './map';
 
 const Friend: FC<FriendProps> = ({ data, addFriendRequest, deleteUserFromList }) => {
   const { handleWindow, handleChatId, handleCurrentUserData } = useChatProvider();

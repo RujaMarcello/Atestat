@@ -5,10 +5,7 @@ import ImgCrop from 'antd-img-crop';
 import React, { FC, useState } from 'react';
 
 import styles from '../profile-picture/index.module.scss';
-interface ProfilePictureProps {
-  currentPicture: string;
-  getPictureUrl: (pictureUrl: string) => void;
-}
+import { ProfilePictureProps } from './map';
 const ProfilePicture: FC<ProfilePictureProps> = ({ currentPicture, getPictureUrl }) => {
   const [imageUrl, setImageUrl] = useState<string>(currentPicture);
 
