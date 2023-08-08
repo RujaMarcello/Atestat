@@ -1,12 +1,10 @@
 import { Button, Form, Input, Select } from 'antd';
-import { FC, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import { FC } from 'react';
 
-import { useUserProvider } from '../../context/User';
-import { UserDto } from '../../generated/api';
-import api from '../../utils/api';
+import useProfileForm from '../../hooks/useProfileForm';
 import ProfilePicture from '../profile-picture';
 import styles from './index.module.scss';
+
 export type ProfileFormState = {
   firstName: string;
   lastName: string;
@@ -17,88 +15,23 @@ export type ProfileFormState = {
   profilePictureUrl: string;
 };
 
-const initialValues: ProfileFormState = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  city: '',
-  state: '',
-  country: '',
-  profilePictureUrl: '',
-};
-
-const { Option } = Select;
-
 const SettingsForm: FC = () => {
-  const { user, updateUser } = useUserProvider();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [isEmailExist, setIsEmailExist] = useState<boolean | null>(null);
-  const [isDisabled, setIsDisabled] = useState<boolean>(true);
-  const [usedEmail, setUsedEmail] = useState('');
   const [form] = Form.useForm();
+  const { Option } = Select;
 
-  const defaultFormData: UserDto = {
-    profilePictureUrl: user?.profilePictureUrl || '',
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
-    email: user?.email || '',
-    city: user?.city || '',
-    state: user?.state || '',
-    country: user?.country || '',
-  };
-
-  useEffect(() => {
-    if (isEmailExist) {
-      setUsedEmail(form.getFieldValue('email'));
-      form.validateFields(['email']);
-    }
-  }, [isEmailExist, form, usedEmail]);
-
-  const getPictureUrl = (pictureUrl: string) => {
-    form.setFieldValue('profilePictureUrl', pictureUrl);
-  };
-
-  const resetState = () => {
-    setIsEmailExist(null);
-  };
-
-  const handleFormSubmit = async () => {
-    try {
-      setLoading(true);
-      await api.user.userCurrentPut({
-        token: localStorage.getItem('token') || '',
-        userDto: {
-          profilePictureUrl: form.getFieldValue('profilePictureUrl'),
-          firstName: form.getFieldValue('firstName'),
-          lastName: form.getFieldValue('lastName'),
-          email: form.getFieldValue('email'),
-          city: form.getFieldValue('city'),
-          state: form.getFieldValue('state'),
-          country: form.getFieldValue('country'),
-        },
-      });
-      updateUser(form.getFieldsValue());
-      setIsEmailExist(false);
-      setLoading(false);
-      setIsDisabled(true);
-      toast.success('Updated');
-    } catch (error) {
-      setIsDisabled(false);
-      setIsEmailExist(true);
-      setLoading(false);
-      toast.error('Error');
-      console.log(error);
-    }
-  };
-
-  const isFormChanged = () => {
-    const formValues = form.getFieldsValue();
-    if (JSON.stringify(formValues) !== JSON.stringify(defaultFormData)) {
-      setIsDisabled(false);
-    } else {
-      setIsDisabled(true);
-    }
-  };
+  const {
+    isFormChanged,
+    handleFormSubmit,
+    getPictureUrl,
+    resetState,
+    user,
+    isEmailExist,
+    usedEmail,
+    isDisabled,
+    loading,
+    defaultFormData,
+    initialValues,
+  } = useProfileForm(form);
 
   return (
     <>

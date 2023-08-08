@@ -1,7 +1,6 @@
 import { BellOutlined } from '@ant-design/icons';
-import { Avatar, Layout } from 'antd';
-import { FC, ReactNode } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Avatar } from 'antd';
+import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useUserProvider } from '../../context/User';

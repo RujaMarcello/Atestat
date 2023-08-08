@@ -1,7 +1,8 @@
 import { ArrowRightOutlined, CameraOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 
+import useChatFooterInput from '../../../hooks/useChatFooterInput';
 import styles from '../index.module.scss';
 
 interface MessageChatInputProps {
@@ -9,22 +10,7 @@ interface MessageChatInputProps {
 }
 
 const MessageChatInput: FC<MessageChatInputProps> = ({ onSend }) => {
-  const [lineText, setLineText] = useState<string>('');
-
-  const handleInputValue = (event: any) => {
-    setLineText(event.target.value);
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!lineText.trim()) {
-      return;
-    }
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      onSend(lineText);
-      setLineText('');
-    }
-  };
+  const { sendMessage, lineText, handleInputValue, handleKeyDown } = useChatFooterInput(onSend);
 
   return (
     <div className={styles.messageChatFooterContainer}>
@@ -35,15 +21,7 @@ const MessageChatInput: FC<MessageChatInputProps> = ({ onSend }) => {
         value={lineText}
         onChange={handleInputValue}
         suffix={
-          <Button
-            style={{ color: '#AA14F0' }}
-            onClick={() => {
-              onSend(lineText);
-              setLineText('');
-            }}
-            type="text"
-            icon={<ArrowRightOutlined />}
-          ></Button>
+          <Button style={{ color: '#AA14F0' }} onClick={sendMessage} type="text" icon={<ArrowRightOutlined />}></Button>
         }
         size="large"
         style={{ borderRadius: '20px' }}

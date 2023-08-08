@@ -1,9 +1,8 @@
 import { Button, Form, Input } from 'antd';
-import { FC, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { FC } from 'react';
+import { Link } from 'react-router-dom';
 
-import api from '../../utils/api';
+import useRegisterForm from '../../hooks/useRegisterForm';
 import BackgroundLogin from '../background-login';
 import styles from './index.module.scss';
 
@@ -14,54 +13,9 @@ export type FormState = {
   password: string;
 };
 
-const initialValues: FormState = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-};
-
 const RegisterForm: FC = () => {
   const [form] = Form.useForm();
-  const [usedEmail, setUsedEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [isEmailExist, setIsEmailExist] = useState<boolean | null>(null);
-
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isEmailExist) {
-      setUsedEmail(form.getFieldValue(['email']));
-      form.validateFields(['email']);
-    } else if (isEmailExist == false) {
-      form.resetFields();
-      navigate('/login');
-    }
-  }, [isEmailExist, form, setUsedEmail, navigate]);
-
-  const resetState = () => {
-    setIsEmailExist(null);
-  };
-
-  const handleFormSubmit = async () => {
-    try {
-      setLoading(true);
-      await api.auth.registerPost({
-        registerRequest: {
-          firstName: form.getFieldValue('firstName'),
-          lastName: form.getFieldValue('lastName'),
-          email: form.getFieldValue('email'),
-          password: form.getFieldValue('password'),
-        },
-      });
-      setLoading(false);
-      setIsEmailExist(false);
-      toast.success('Succesfuly');
-    } catch (error) {
-      setLoading(false);
-      setIsEmailExist(true);
-    }
-  };
+  const { initialValues, usedEmail, loading, isEmailExist, resetState, handleFormSubmit } = useRegisterForm(form);
 
   return (
     <BackgroundLogin>

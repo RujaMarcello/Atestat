@@ -1,34 +1,15 @@
 import { Spin } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { FriendDto } from '../../../generated/api';
-import api from '../../../utils/api';
+import useAddFriendsList from '../../../hooks/useAddFriendsList';
 import { useChatProvider } from '../context/context';
 import styles from '../index.module.scss';
 import AddFriends from './addFriends';
 
 const AddFriendsList = () => {
-  const [addFriendList, setAddFriendList] = useState<FriendDto[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { addFriendList, isLoading, deleteUserFromList } = useAddFriendsList();
   const { currentSearchedValue } = useChatProvider();
-  useEffect(() => {
-    const handleAddFriendsList = async () => {
-      try {
-        setIsLoading(true);
-        const response = await api.friend.addFriendListGet({ token: localStorage.getItem('token') || '' });
-        setAddFriendList(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-      setIsLoading(false);
-    };
-    handleAddFriendsList();
-  }, []);
-
-  const deleteUserFromList = (id: number) => {
-    const result = addFriendList.filter((el: FriendDto) => el.id != id);
-    setAddFriendList(result);
-  };
 
   return (
     <React.Fragment>
