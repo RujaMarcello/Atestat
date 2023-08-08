@@ -16,10 +16,7 @@ app.use(router);
 
 const io = require("socket.io")(server, {
   cors: {
-    origin: [
-      process.env.REACT_APP_FRONTEND_BASE_URL,
-      "https://admin.socket.io",
-    ],
+    origin: "*",
     methods: ["GET", "POST"],
     credentials: true,
   },
