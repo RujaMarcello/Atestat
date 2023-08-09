@@ -1,11 +1,10 @@
 import { Image, Modal, Radio, Skeleton, Space, Tag } from 'antd';
-import { RadioChangeEvent } from 'antd/lib/radio/interface';
-import { FC, useState } from 'react';
-import toast from 'react-hot-toast';
+import { FC } from 'react';
 
 import { UserDto } from '../../generated/api';
-import api from '../../utils/api';
+import useUserDataPopup from '../../hooks/useUserDataPopup';
 import styles from '../user-data-popup/index.module.scss';
+
 interface UserDataPopupProps {
   open: boolean | undefined;
   onOk: () => void;
@@ -15,32 +14,7 @@ interface UserDataPopupProps {
 }
 
 const UserDataPopup: FC<UserDataPopupProps> = ({ open, onOk, onCancel, dataUser, isLoading }) => {
-  const userRoleId = dataUser?.userRole?.id;
-  const [roleId, setRoleId] = useState();
-  const [isDisable, setIsDisable] = useState<boolean>(true);
-
-  const handleRole = (e: RadioChangeEvent) => {
-    if (dataUser?.userRole?.id === e.target.value) {
-      setIsDisable(true);
-    } else {
-      setIsDisable(false);
-    }
-    setRoleId(e.target.value);
-  };
-
-  const handleSubmitChangesRole = async () => {
-    try {
-      api.user.roleUpdatePut({
-        token: localStorage.getItem('token') || '',
-        email: dataUser?.email,
-        id: roleId,
-      });
-      toast.success('Updated');
-    } catch (error) {
-      console.log(error);
-      toast.error('Error');
-    }
-  };
+  const { userRoleId, isDisable, handleRole, handleSubmitChangesRole } = useUserDataPopup(dataUser);
 
   return (
     <Modal

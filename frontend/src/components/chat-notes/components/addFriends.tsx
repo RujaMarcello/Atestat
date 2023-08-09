@@ -3,30 +3,15 @@ import { Avatar, Button } from 'antd';
 import { FC } from 'react';
 
 import { FriendDto } from '../../../generated/api';
+import useAddFriends from '../../../hooks/useAddFriends';
 import styles from '../index.module.scss';
 interface AddFriendsProps {
   data: FriendDto;
   deleteUserFromList: (id: number) => void;
 }
 const AddFriends: FC<AddFriendsProps> = ({ data, deleteUserFromList }) => {
-  const sendFriendRequest = async (id: string) => {
-    const URL =
-      `${process.env.REACT_APP_BACKEND_BASE_URL}/add-friend?` +
-      new URLSearchParams({
-        friendId: id,
-      });
-    fetch(URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        token: localStorage.getItem('token') || '',
-      },
-    }).then((res) => {
-      if (res.status === 200) {
-        deleteUserFromList(parseInt(id));
-      }
-    });
-  };
+  const { sendFriendRequest } = useAddFriends(deleteUserFromList);
+
   return (
     <div className={styles.converationContainer}>
       <div>

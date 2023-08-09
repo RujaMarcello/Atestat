@@ -1,28 +1,10 @@
-import { FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 
 import UserTable from '../../../components/users-table';
-import { TableDataDto } from '../../../generated/api';
-import api from '../../../utils/api';
+import useGetAllUsers from '../../../hooks/useGetAllUsers';
 
 const AllUsers: FC = () => {
-  const [data, setData] = useState<TableDataDto | undefined>();
-  const [page, setPage] = useState<number>(1);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const getCurrentPage = (currentPage: number) => {
-    setPage(currentPage);
-  };
-
-  useEffect(() => {
-    const fetcher = async () => {
-      setLoading(true);
-      const response = await api.user
-        .usersGet({ token: localStorage.getItem('token') || '', page: page })
-        .finally(() => setLoading(false));
-      setData(response.data);
-    };
-    fetcher();
-  }, [page]);
+  const { data, loading, getCurrentPage } = useGetAllUsers();
 
   return <UserTable loading={loading} getCurrentPage={getCurrentPage} data={data} />;
 };
