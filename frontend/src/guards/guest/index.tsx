@@ -1,13 +1,11 @@
 import { Spin } from 'antd';
-import { FC, memo, ReactNode, useEffect, useState } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
-import { useUserProvider } from '../../context/User';
+import { useUserProvider } from '../../context/User/User';
 import EmptyLayout from '../../layouts/Empty';
+import { GuestGuardProps } from './map';
 
-interface GuestGuardProps {
-  children: ReactNode;
-}
 const GuestGuard: FC<GuestGuardProps> = ({ children }) => {
   const { user, userLoading } = useUserProvider();
   const [isAuthenticated, setIsAuthenticated] = useState(!!user);

@@ -4,10 +4,7 @@ import React, { FC } from 'react';
 
 import useProfilePicture from '../../hooks/useProfilePicture';
 import styles from '../profile-picture/index.module.scss';
-interface ProfilePictureProps {
-  currentPicture: string;
-  getPictureUrl: (pictureUrl: string) => void;
-}
+import { ProfilePictureProps } from './map';
 const ProfilePicture: FC<ProfilePictureProps> = ({ currentPicture, getPictureUrl }) => {
   const { imageUrl, uploadButton, handleUpload, onPreview } = useProfilePicture(currentPicture, getPictureUrl);
 

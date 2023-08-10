@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router';
 
-import { FormState } from '../components/register-form';
+import { RegisterFormState } from '../components/register-form/map';
 import api from '../utils/api';
 
-const initialValues: FormState = {
+const initialValues: RegisterFormState = {
   firstName: '',
   lastName: '',
   email: '',

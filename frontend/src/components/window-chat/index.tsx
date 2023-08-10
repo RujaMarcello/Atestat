@@ -2,9 +2,7 @@ import { MessageFilled } from '@ant-design/icons';
 import { FC, ReactNode } from 'react';
 
 import styles from '../window-chat/index.module.scss';
-interface EmptyLayoutProps {
-  children?: ReactNode;
-}
+import { EmptyLayoutProps } from './map';
 
 const WindowChat: FC<EmptyLayoutProps> = ({ children }) => {
   return <MessageFilled className={styles.popup} />;

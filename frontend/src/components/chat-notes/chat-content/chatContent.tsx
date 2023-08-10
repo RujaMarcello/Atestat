@@ -3,10 +3,10 @@ import React, { FC } from 'react';
 import useChatContent from '../../../hooks/useChatContent';
 import ToolBar from '../chat-footer/toolBar';
 import ChatHeader from '../chat-header/header';
-import AddFriendsList from '../components/addFriendsList';
-import ConversationsList from '../components/conversationsList';
-import FriendList from '../components/friendsList';
-import MessagesArea from '../components/messagesArea';
+import AddFriendsList from '../components/AddFriendList/addFriendsList';
+import ConversationsList from '../components/ConversationsList/conversationsList';
+import FriendsList from '../components/FriendsList/friendsList';
+import MessagesArea from '../components/MessagesArea/messagesArea';
 import styles from '../index.module.scss';
 import { WINDOW } from '../window';
 const ChatContent: FC = () => {
@@ -24,7 +24,7 @@ const ChatContent: FC = () => {
               className={`${styles.chatContentGeneral} ${showScrollbar ? '' : styles.hideScrollbar}`}
             >
               {currentWindow === WINDOW.friends && (
-                <FriendList handleFriendsRequestsCount={handleFriendsRequestsCount} />
+                <FriendsList handleFriendsRequestsCount={handleFriendsRequestsCount} />
               )}
               {currentWindow === WINDOW.addFriends && <AddFriendsList />}
               {currentWindow === WINDOW.conversation && <ConversationsList />}

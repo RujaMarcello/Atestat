@@ -1,12 +1,12 @@
 import { Spin } from 'antd';
 import React from 'react';
 
-import { ConversationDto } from '../../../generated/api';
-import useConversationList from '../../../hooks/useConversationList';
-import Conversation from '../components/conversation';
-import { useChatProvider } from '../context/context';
-import styles from '../index.module.scss';
-import { WINDOW } from '../window';
+import { ConversationDto } from '../../../../generated/api';
+import useConversationList from '../../../../hooks/useConversationList';
+import { useChatProvider } from '../../context/context';
+import styles from '../../index.module.scss';
+import { WINDOW } from '../../window';
+import Conversation from '../Conversation/conversation';
 
 const ConversationsList = () => {
   const { conversationsList, loading } = useConversationList();

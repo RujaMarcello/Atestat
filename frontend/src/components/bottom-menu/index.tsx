@@ -4,18 +4,19 @@ import { MenuProps } from 'antd/lib/menu';
 import { FC } from 'react';
 import { useNavigate } from 'react-router';
 
-import { useUserProvider } from '../../context/User';
+import { useUserProvider } from '../../context/User/User';
+import { BOTTOMPAGE } from './map';
 
 const BottomDashboard: FC = () => {
   const navigate = useNavigate();
   const { signOut } = useUserProvider();
   const handleMenuClick: MenuProps['onSelect'] = ({ key }) => {
     switch (key) {
-      case 'settings':
-        navigate('settings');
+      case BOTTOMPAGE.SETTINGS:
+        navigate(BOTTOMPAGE.SETTINGS);
         break;
-      case 'logout':
-        navigate('/login');
+      case BOTTOMPAGE.LOGOUT:
+        navigate(`/${BOTTOMPAGE.LOGOUT}`);
         signOut();
         break;
     }
@@ -26,8 +27,8 @@ const BottomDashboard: FC = () => {
       mode="inline"
       theme="light"
       items={[
-        { label: 'Logout', key: 'logout', icon: <LogoutOutlined /> },
-        { label: 'Settings', key: 'settings', icon: <SettingFilled /> },
+        { label: 'Logout', key: BOTTOMPAGE.LOGOUT, icon: <LogoutOutlined /> },
+        { label: 'Settings', key: BOTTOMPAGE.SETTINGS, icon: <SettingFilled /> },
       ]}
       onSelect={handleMenuClick}
     ></Menu>

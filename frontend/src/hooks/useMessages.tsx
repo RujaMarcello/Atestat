@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import Message from '../components/chat-notes/components/message';
+import Message from '../components/chat-notes/components/Message/message';
 import { MessageDto } from '../generated/api';
 
 const useMessages = (messages: MessageDto[]) => {
@@ -32,7 +32,7 @@ const useMessages = (messages: MessageDto[]) => {
   };
 
   const messagesList = messages.map((el: MessageDto, index: number) => {
-    return <Message key={index} lineText={el.lineText} userId={el.userId} time={el.createAt} />;
+    return <Message key={index} lineText={el.lineText} userId={el.userId?.toString()} time={el.createAt} />;
   });
 
   return { showScrollbar, allMessagesRef, messagesList, handleScroll };

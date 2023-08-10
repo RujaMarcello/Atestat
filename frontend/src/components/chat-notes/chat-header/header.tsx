@@ -6,9 +6,7 @@ import useChatHeader from '../../../hooks/useChatHeader';
 import useDebounce from '../../../hooks/useDebounce';
 import { useChatProvider } from '../context/context';
 import styles from '../index.module.scss';
-interface ChatHeaderProps {
-  children?: ReactNode;
-}
+import { ChatHeaderProps } from './map';
 
 const ChatHeader: FC<ChatHeaderProps> = () => {
   const { handleInputValue } = useChatHeader();

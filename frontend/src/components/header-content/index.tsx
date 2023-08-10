@@ -3,7 +3,7 @@ import { Avatar } from 'antd';
 import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useUserProvider } from '../../context/User';
+import { useUserProvider } from '../../context/User/User';
 import styles from './index.module.scss';
 
 const HeaderContent: FC = () => {

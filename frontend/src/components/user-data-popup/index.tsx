@@ -1,18 +1,9 @@
 import { Image, Modal, Radio, Skeleton, Space, Tag } from 'antd';
 import { FC } from 'react';
 
-import { UserDto } from '../../generated/api';
 import useUserDataPopup from '../../hooks/useUserDataPopup';
 import styles from '../user-data-popup/index.module.scss';
-
-interface UserDataPopupProps {
-  open: boolean | undefined;
-  onOk: () => void;
-  onCancel: () => void;
-  dataUser: UserDto | undefined;
-  isLoading: boolean;
-}
-
+import { UserDataPopupProps } from './map';
 const UserDataPopup: FC<UserDataPopupProps> = ({ open, onOk, onCancel, dataUser, isLoading }) => {
   const { userRoleId, isDisable, handleRole, handleSubmitChangesRole } = useUserDataPopup(dataUser);
 

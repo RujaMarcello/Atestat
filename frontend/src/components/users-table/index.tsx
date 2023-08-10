@@ -2,20 +2,17 @@ import Table from 'antd/es/table';
 import { ColumnsType } from 'antd/lib/table';
 import React, { useState } from 'react';
 
-import { DataDto, TableDataDto, UserDto } from '../../generated/api';
+import { DataDto, UserDto } from '../../generated/api';
 import api from '../../utils/api';
 import UserDataPopup from '../user-data-popup';
 import styles from './index.module.scss';
-interface TableProps {
-  data: TableDataDto | undefined;
-  loading: boolean;
-  getCurrentPage: (currentPage: number) => void;
-}
+import { TableProps } from './map';
 
 const UserTable: React.FC<TableProps> = ({ data, getCurrentPage, loading }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickedUser, setClickedUser] = useState<UserDto | undefined>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const handleRowClick = async (email: string) => {
     try {
       setIsLoading(true);

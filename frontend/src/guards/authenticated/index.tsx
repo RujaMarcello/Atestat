@@ -1,15 +1,11 @@
 import { Spin } from 'antd';
-import { FC, memo, ReactNode, useCallback, useEffect, useState } from 'react';
+import { FC, memo, useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { useUserProvider } from '../../context/User';
+import { useUserProvider } from '../../context/User/User';
 import EmptyLayout from '../../layouts/Empty';
 import LoginPage from '../../pages/login';
-
-interface AuthenticatedGuardProps {
-  children: ReactNode;
-  inProjectGuard?: boolean;
-}
+import { AuthenticatedGuardProps } from './map';
 
 const AuthenticatedGuard: FC<AuthenticatedGuardProps> = ({ children }) => {
   const { user, userLoading } = useUserProvider();

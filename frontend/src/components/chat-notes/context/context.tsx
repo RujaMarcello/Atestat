@@ -1,11 +1,7 @@
 import { createContext, FC, ReactNode, useContext, useState } from 'react';
 
 import { WINDOW } from '../window';
-
-interface CurrentUserData {
-  name: string;
-  profilePictureUrl: string;
-}
+import { CurrentUserData } from './map';
 
 interface ChatContextInterface {
   handleWindow: (currentWindow: WINDOW) => void;

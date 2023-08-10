@@ -791,6 +791,7 @@
         "required": [
           "chatId",
           "createAt",
+          "id",
           "lineText",
           "userId"
         ],
@@ -812,9 +813,8 @@
             "minLength": 1
           },
           "userId": {
-            "type": "integer",
-            "minLength": 1,
-            "nullable": true
+            "type": "string",
+            "minLength": 1
           }
         },
         "example": {
@@ -822,7 +822,7 @@
           "createAt": "string",
           "id": "string",
           "lineText": "string",
-          "userId": null
+          "userId": "string"
         }
       },
       "ArrayOfMessages": {

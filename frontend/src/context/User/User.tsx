@@ -1,21 +1,9 @@
-import { createContext, Dispatch, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
-import { RoleDtoNameEnum, UserDto } from '../generated/api';
-import api from '../utils/api';
-
-interface Token {
-  token: string;
-}
-
-interface UserContextInterface {
-  userLoading: boolean;
-  user: UserDto | undefined;
-  setToken: Dispatch<any>;
-  roleGetter: (f: (v: UserRolesIsFunction) => boolean) => boolean;
-  signOut: () => void;
-  updateUser: (form: UserDto) => void;
-}
-
+import { RoleDtoNameEnum, UserDto } from '../../generated/api';
+import api from '../../utils/api';
+import { UserRolesIsFunction } from '../map';
+import { Token, UserContextInterface } from './map';
 const defaultValues: UserContextInterface = {
   roleGetter(): boolean {
     return false;
@@ -26,12 +14,6 @@ const defaultValues: UserContextInterface = {
   user: undefined,
   userLoading: false,
 };
-
-export interface UserRolesIsFunction {
-  SUPERADMIN: boolean;
-  ADMIN: boolean;
-  USER: boolean;
-}
 
 export const UserContext = createContext<UserContextInterface>(defaultValues);
 

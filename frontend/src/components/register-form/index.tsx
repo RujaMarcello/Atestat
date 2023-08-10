@@ -6,13 +6,6 @@ import useRegisterForm from '../../hooks/useRegisterForm';
 import BackgroundLogin from '../background-login';
 import styles from './index.module.scss';
 
-export type FormState = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-};
-
 const RegisterForm: FC = () => {
   const [form] = Form.useForm();
   const { initialValues, usedEmail, loading, isEmailExist, resetState, handleFormSubmit } = useRegisterForm(form);

@@ -2,8 +2,8 @@ import { FormInstance } from 'antd';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
-import { ProfileFormState } from '../components/profile-form';
-import { useUserProvider } from '../context/User';
+import { ProfileFormState } from '../components/profile-form/map';
+import { useUserProvider } from '../context/User/User';
 import { UserDto } from '../generated/api';
 import api from '../utils/api';
 

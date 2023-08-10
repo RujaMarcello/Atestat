@@ -1,15 +1,12 @@
 import { Spin } from 'antd';
 import React, { FC } from 'react';
 
-import { FriendDto } from '../../../generated/api';
-import useFriendsList from '../../../hooks/useFriendsList';
-import { useChatProvider } from '../context/context';
-import styles from '../index.module.scss';
-import Friend from './friend';
-
-interface FriendsListProps {
-  handleFriendsRequestsCount: (count: number) => void;
-}
+import { FriendDto } from '../../../../generated/api';
+import useFriendsList from '../../../../hooks/useFriendsList';
+import { useChatProvider } from '../../context/context';
+import styles from '../../index.module.scss';
+import Friend from '../Friend/friend';
+import { FriendsListProps } from './map';
 
 const FriendsList: FC<FriendsListProps> = ({ handleFriendsRequestsCount }) => {
   const { friendsList, isLoading, addFriendRequest, deleteUserFromList } = useFriendsList(handleFriendsRequestsCount);

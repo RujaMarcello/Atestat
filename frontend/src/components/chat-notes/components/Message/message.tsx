@@ -1,13 +1,9 @@
 import { FC } from 'react';
 
-import { useUserProvider } from '../../../context/User';
-import shortTime from '../../../utils/time';
-import styles from '../index.module.scss';
-interface MessageProps {
-  lineText: string;
-  userId: number | null;
-  time: string;
-}
+import { useUserProvider } from '../../../../context/User/User';
+import shortTime from '../../../../utils/time';
+import styles from '../../index.module.scss';
+import { MessageProps } from './map';
 const Message: FC<MessageProps> = ({ lineText, userId, time }) => {
   const { user } = useUserProvider();
   const sentByMe = userId && user && user.id?.toString() === userId.toString();

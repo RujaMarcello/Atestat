@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 
-import { MessageDto } from '../../../generated/api';
-import useMessages from '../../../hooks/useMessages';
-import styles from '../index.module.scss';
+import { MessageDto } from '../../../../generated/api';
+import useMessages from '../../../../hooks/useMessages';
+import styles from '../../index.module.scss';
 interface MessagesProps {
   messages: MessageDto[];
 }

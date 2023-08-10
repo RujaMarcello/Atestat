@@ -1,11 +1,8 @@
-import { FC, ReactElement, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 
-import { UserRolesIsFunction, useUserProvider } from './User';
+import { useUserProvider } from '../User/User';
+import { UserRole } from './map';
 
-interface UserRole {
-  renderIf: (v: UserRolesIsFunction) => boolean;
-  children?: ReactElement;
-}
 export const Role: FC<UserRole> = ({ renderIf, children }) => {
   const { roleGetter: is } = useUserProvider();
 

@@ -5,16 +5,6 @@ import useProfileForm from '../../hooks/useProfileForm';
 import ProfilePicture from '../profile-picture';
 import styles from './index.module.scss';
 
-export type ProfileFormState = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  city: string;
-  state: string;
-  country: string;
-  profilePictureUrl: string;
-};
-
 const SettingsForm: FC = () => {
   const [form] = Form.useForm();
   const { Option } = Select;

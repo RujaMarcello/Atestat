@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { useChatProvider } from '../components/chat-notes/context/context';
-import { useUserProvider } from '../context/User';
+import { useUserProvider } from '../context/User/User';
 import { MessageDto } from '../generated/api';
 import api from '../utils/api';
 import { socket } from '../utils/socket';
