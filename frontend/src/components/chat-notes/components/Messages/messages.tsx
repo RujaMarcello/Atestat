@@ -1,44 +1,14 @@
-import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import React, { FC } from 'react';
 
 import { MessageDto } from '../../../../generated/api';
+import useMessages from '../../../../hooks/useMessages';
 import styles from '../../index.module.scss';
-import Message from '../Message/message';
-//Solving
 interface MessagesProps {
-  messages: ReactNode;
+  messages: MessageDto[];
 }
 
-const Messages: FC<any> = ({ messages }) => {
-  const [showScrollbar, setShowScrollbar] = useState<boolean>(true);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const allMessagesRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (allMessagesRef.current) {
-      allMessagesRef.current.scrollTop = allMessagesRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  const handleScroll = () => {
-    setShowScrollbar(true);
-
-    clearTimeout(timerRef.current || 0);
-
-    timerRef.current = setTimeout(() => {
-      setShowScrollbar(false);
-    }, 2000);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (timerRef.current !== null) {
-        clearTimeout(timerRef.current);
-      }
-    };
-  };
-
-  const messagesList = messages.map((el: MessageDto, index: number) => {
-    return <Message key={index} lineText={el.lineText} userId={el.userId} time={el.createAt} />;
-  });
+const Messages: FC<MessagesProps> = ({ messages }) => {
+  const { showScrollbar, allMessagesRef, messagesList, handleScroll } = useMessages(messages);
 
   return (
     <div

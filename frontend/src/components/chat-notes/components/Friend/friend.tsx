@@ -2,53 +2,14 @@ import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { Avatar, Button } from 'antd';
 import { FC } from 'react';
 
+import useFriend from '../../../../hooks/useFriend';
 import { useChatProvider } from '../../context/context';
 import styles from '../../index.module.scss';
 import { WINDOW } from '../../window';
 import { FriendProps } from './map';
-
 const Friend: FC<FriendProps> = ({ data, addFriendRequest, deleteUserFromList }) => {
   const { handleWindow, handleChatId, handleCurrentUserData } = useChatProvider();
-
-  const acceptFriendRequest = async (id: string) => {
-    const URL =
-      `${process.env.REACT_APP_BACKEND_BASE_URL}/accept-friend?` +
-      new URLSearchParams({
-        friendId: id,
-      });
-    fetch(URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        token: localStorage.getItem('token') || '',
-      },
-    }).then(async (response) => {
-      const res = await response.json();
-
-      if (response.status == 200) {
-        addFriendRequest(data.id, res.chatId);
-      }
-    });
-  };
-
-  const rejectFriendRequest = async (id: string) => {
-    const URL =
-      `${process.env.REACT_APP_BACKEND_BASE_URL}/reject-friend?` +
-      new URLSearchParams({
-        friendId: id,
-      });
-    fetch(URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        token: localStorage.getItem('token') || '',
-      },
-    }).then((response) => {
-      if (response.status == 200) {
-        deleteUserFromList(data.id);
-      }
-    });
-  };
+  const { acceptFriendRequest, rejectFriendRequest } = useFriend(data, addFriendRequest, deleteUserFromList);
 
   return (
     <div

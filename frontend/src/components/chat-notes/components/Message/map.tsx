@@ -1,5 +1,5 @@
 export interface MessageProps {
   lineText: string;
-  userId: string;
+  userId: string | undefined;
   time: string;
 }

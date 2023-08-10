@@ -1,33 +1,23 @@
 import { FilterOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
-import { FC, ReactNode, useState } from 'react';
+import { FC, ReactNode } from 'react';
 
+import useChatHeader from '../../../hooks/useChatHeader';
+import useDebounce from '../../../hooks/useDebounce';
 import { useChatProvider } from '../context/context';
 import styles from '../index.module.scss';
 import { ChatHeaderProps } from './map';
 
 const ChatHeader: FC<ChatHeaderProps> = () => {
-  const [isPressed, setIsPressed] = useState(false);
-  const { currentSearchedValue } = useChatProvider();
-  const { handleCurrentSearchedValue } = useChatProvider();
-
-  const handleFilterClick = () => {
-    setIsPressed(!isPressed);
-  };
-
-  const { handleSort, isSortApplied } = useChatProvider();
-
-  const handleInputValue = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleCurrentSearchedValue(event.target.value);
-  };
-
+  const { handleInputValue } = useChatHeader();
+  const { handleSort, isSortApplied, currentSearchedValue } = useChatProvider();
   return (
     <div className={styles.conversationHeader}>
       <h1 className={styles.title}>Chat</h1>
       <div className={styles.searchBar}>
         <Input
           defaultValue={currentSearchedValue}
-          onChange={handleInputValue}
+          onChange={useDebounce(handleInputValue, 500)}
           size="large"
           style={{ borderRadius: '5x', marginTop: '15px' }}
           prefix={<SearchOutlined />}

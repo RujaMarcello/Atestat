@@ -6,7 +6,7 @@ import styles from '../../index.module.scss';
 import { MessageProps } from './map';
 const Message: FC<MessageProps> = ({ lineText, userId, time }) => {
   const { user } = useUserProvider();
-  const sentByMe = user && user.id?.toString() === userId.toString();
+  const sentByMe = userId && user && user.id?.toString() === userId.toString();
 
   return (
     <div className={sentByMe ? styles.textMessageContainerUser : styles.textMessageContainerPeople}>

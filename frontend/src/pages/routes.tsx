@@ -2,7 +2,7 @@ import { FC, lazy, Suspense, useEffect } from 'react';
 import { Navigate, RouteObject, useLocation, useRoutes } from 'react-router';
 
 import FullscreenLoader from '../components/fullscreen-loader';
-import { Role } from '../context/Role';
+import { Role } from '../context/Role/Role';
 import AuthenticatedGuard from '../guards/authenticated';
 import GuestGuard from '../guards/guest';
 import DefaultLayout from '../layouts/Default';
