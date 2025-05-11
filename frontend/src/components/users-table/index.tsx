@@ -35,14 +35,14 @@ const UserTable: React.FC<TableProps> = ({ data, getCurrentPage, loading }) => {
   };
   const columns: ColumnsType<DataDto> = [
     {
-      title: 'First Name',
+      title: 'Nume',
       dataIndex: 'firstName',
       key: 'firstName',
       sorter: (a, b) => a.firstName.localeCompare(b.firstName),
       sortDirections: ['descend', 'ascend'],
     },
     {
-      title: 'Last Name',
+      title: 'Prenume',
       dataIndex: 'lastName',
       key: 'lastName',
       sorter: (a, b) => a.firstName.localeCompare(b.firstName),

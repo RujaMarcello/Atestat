@@ -22,7 +22,9 @@ const Page = {
     Dashboard: {
       AllUsers: Loadable(lazy(() => import('./dashboard/all-users/all-users'))),
       Notification: Loadable(lazy(() => import('./dashboard/notification'))),
-      Profile: Loadable(lazy(() => import('./dashboard/profile'))),
+      HealthCharts: Loadable(lazy(() => import('./dashboard/health-charts'))),
+      Alerts: Loadable(lazy(() => import('./dashboard/alerts'))),
+      PatientManagement: Loadable(lazy(() => import('./dashboard/patient-management'))),
     },
   },
   Login: Loadable(lazy(() => import('./login'))),
@@ -39,7 +41,7 @@ const routes: Array<RouteObject> = [
         <EmptyLayout />
       </AuthenticatedGuard>
     ),
-    children: [{ path: '/', element: <Navigate to="/dashboard" replace /> }],
+    children: [{ path: '/', element: <Navigate to="/dashboard/health-charts" replace /> }],
   },
   {
     path: '/dashboard',
@@ -83,19 +85,14 @@ const routes: Array<RouteObject> = [
         ],
       },
       {
-        path: 'chat',
+        path: 'health-charts',
         children: [
           {
             index: true,
             element: (
               <>
-                <Role renderIf={({ SUPERADMIN }) => SUPERADMIN}>
-                  <Page.Project.Dashboard.Notification />
-                </Role>
-                <Role renderIf={({ USER, ADMIN }) => USER || ADMIN}>
-                  <EmptyLayout>
-                    <Page.Error404 />
-                  </EmptyLayout>
+                <Role renderIf={({ SUPERADMIN, ADMIN, USER }) => SUPERADMIN || ADMIN || USER}>
+                  <Page.Project.Dashboard.HealthCharts />
                 </Role>
               </>
             ),
@@ -103,11 +100,37 @@ const routes: Array<RouteObject> = [
         ],
       },
       {
-        path: 'profile',
+        path: 'alerts',
         children: [
           {
             index: true,
-            element: <Page.Project.Dashboard.Profile />,
+            element: (
+              <>
+                <Role renderIf={({ SUPERADMIN, ADMIN, USER }) => SUPERADMIN || ADMIN || USER}>
+                  <Page.Project.Dashboard.Alerts />
+                </Role>
+              </>
+            ),
+          },
+        ],
+      },
+      {
+        path: 'patient-management',
+        children: [
+          {
+            index: true,
+            element: (
+              <>
+                <Role renderIf={({ SUPERADMIN, ADMIN }) => SUPERADMIN || ADMIN}>
+                  <Page.Project.Dashboard.PatientManagement />
+                </Role>
+                <Role renderIf={({ USER }) => USER}>
+                  <EmptyLayout>
+                    <Page.Error404 />
+                  </EmptyLayout>
+                </Role>
+              </>
+            ),
           },
         ],
       },

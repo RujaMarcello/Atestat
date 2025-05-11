@@ -1,0 +1,30 @@
+.container {
+    margin-top: 20px;
+}
+
+.card {
+    width: 100%;
+}
+
+.tabButtons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.tableActions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+
+// Stilizare pentru modală
+:global {
+    .ant-modal-content {
+        border-radius: 8px;
+    }
+
+    .ant-modal-header {
+        border-radius: 8px 8px 0 0;
+    }
+}

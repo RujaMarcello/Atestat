@@ -1,24 +1,23 @@
-import { TableOutlined, UserOutlined, WechatOutlined } from '@ant-design/icons';
-import { Menu } from 'antd';
+import { BellOutlined, DashboardOutlined, TeamOutlined } from '@ant-design/icons';
+import { Menu, Badge } from 'antd';
 import { MenuProps } from 'antd/lib/menu';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 const SuperAdminDashboard: FC = () => {
   const navigate = useNavigate();
+  const [alertCount, setAlertCount] = useState(3); // Mock data pentru numărul de alerte necitite
+
   const handleMenuClick: MenuProps['onSelect'] = ({ key }) => {
     switch (key) {
-      case 'all-users':
-        navigate('all-users');
+      case 'patient-management':
+        navigate('patient-management');
         break;
-      case 'chat':
-        navigate('chat');
+      case 'dashboard':
+        navigate('health-charts');
         break;
-      case 'settings':
-        navigate('settings');
-        break;
-      case 'profile':
-        navigate('profile');
+      case 'alerts':
+        navigate('alerts');
         break;
     }
   };
@@ -27,9 +26,13 @@ const SuperAdminDashboard: FC = () => {
       mode="inline"
       theme="light"
       items={[
-        { label: 'All Users', key: 'all-users', icon: <TableOutlined /> },
-        { label: 'Chat', key: 'chat', icon: <WechatOutlined /> },
-        { label: 'Profile', key: 'profile', icon: <UserOutlined /> },
+        { label: 'Management Pacienți', key: 'patient-management', icon: <TeamOutlined /> },
+        { label: 'Dashboard', key: 'dashboard', icon: <DashboardOutlined /> },
+        {
+          label: 'Notificări',
+          key: 'alerts',
+          icon: <Badge count={alertCount} size="small"><BellOutlined /></Badge>
+        },
       ]}
       onSelect={handleMenuClick}
     ></Menu>

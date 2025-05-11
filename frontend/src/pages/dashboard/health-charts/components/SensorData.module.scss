@@ -1,0 +1,17 @@
+.container {
+    margin-top: 20px;
+
+    .controlsCard {
+        margin-bottom: 20px;
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+    }
+
+    .chartCard {
+        min-height: 400px;
+    }
+}

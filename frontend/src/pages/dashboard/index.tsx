@@ -1,8 +1,15 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import DefaultLayout from '../../layouts/Default';
+const Dashboard: FC = () => {
+  const navigate = useNavigate();
 
-const EmptyLayout: FC = () => {
-  return <h1>Welcome Back Sir</h1>;
+  useEffect(() => {
+    // Redirecționare către dashboard-ul medical
+    navigate('/dashboard/health-charts');
+  }, [navigate]);
+
+  return null; // Nu mai afișăm nimic, deoarece redirecționăm
 };
-export default EmptyLayout;
+
+export default Dashboard;

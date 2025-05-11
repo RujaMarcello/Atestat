@@ -1,0 +1,26 @@
+.container {
+    margin-top: 20px;
+}
+
+.formActions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.viewCard {
+    height: 100%;
+
+    p {
+        margin-bottom: 10px;
+    }
+}
+
+.medicalSection {
+    margin-bottom: 16px;
+
+    h5 {
+        margin-bottom: 8px;
+    }
+}

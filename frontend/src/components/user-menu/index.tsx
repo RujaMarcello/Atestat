@@ -1,18 +1,20 @@
-import { GroupOutlined, UserOutlined } from '@ant-design/icons';
-import { Menu } from 'antd';
+import { BellOutlined, DashboardOutlined } from '@ant-design/icons';
+import { Menu, Badge } from 'antd';
 import { MenuProps } from 'antd/lib/menu';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 const UserDashboard: FC = () => {
   const navigate = useNavigate();
+  const [alertCount, setAlertCount] = useState(3); // Mock data pentru numărul de alerte necitite
+
   const handleMenuClick: MenuProps['onSelect'] = ({ key }) => {
     switch (key) {
-      case 'my-groups':
-        navigate('my-groups');
+      case 'dashboard':
+        navigate('health-charts');
         break;
-      case 'profile':
-        navigate('profile');
+      case 'alerts':
+        navigate('alerts');
         break;
     }
   };
@@ -21,8 +23,12 @@ const UserDashboard: FC = () => {
       mode="inline"
       theme="light"
       items={[
-        { label: 'My Groups', key: 'my-groups', icon: <GroupOutlined /> },
-        { label: 'Profile', key: 'profile', icon: <UserOutlined /> },
+        { label: 'Dashboard', key: 'dashboard', icon: <DashboardOutlined /> },
+        {
+          label: 'Notificări',
+          key: 'alerts',
+          icon: <Badge count={alertCount} size="small"><BellOutlined /></Badge>
+        },
       ]}
       onSelect={handleMenuClick}
     ></Menu>

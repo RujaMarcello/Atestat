@@ -27,7 +27,7 @@ const BottomDashboard: FC = () => {
       theme="light"
       items={[
         { label: 'Logout', key: 'logout', icon: <LogoutOutlined /> },
-        { label: 'Settings', key: 'settings', icon: <SettingFilled /> },
+        // { label: 'Settings', key: 'settings', icon: <SettingFilled /> },
       ]}
       onSelect={handleMenuClick}
     ></Menu>

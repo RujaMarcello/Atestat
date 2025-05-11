@@ -1,21 +1,12 @@
 require("dotenv").config();
 
-const { Pool } = require('pg');
-
+const Pool = require("pg").Pool;
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
-});
-
-pool.query("SELECT version()", (err, res) => {
-  if (err) {
-    console.log("Nu s-a putut conecta la baza de date:", err);
-  } else {
-    console.log("Conectat la baza de date");
-    console.log(res.rows[0]);
-  }
+  user: "postgres",
+  host: "localhost",
+  database: "login_data_base",
+  password: process.env.REACT_DATABASE_PASSWORD + "",
+  port: 5432,
 });
 
 module.exports = pool;

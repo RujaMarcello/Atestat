@@ -1,0 +1,41 @@
+.container {
+    padding: 20px;
+    width: 100%;
+}
+
+.card {
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.formActions {
+    margin-top: 24px;
+    text-align: right;
+}
+
+// Stilizare pentru popup-uri
+:global(.ant-modal-content) {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+:global(.ant-modal-header) {
+    border-radius: 8px 8px 0 0;
+}
+
+:global(.ant-table-row) {
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+        background-color: #f5f5f5;
+    }
+}

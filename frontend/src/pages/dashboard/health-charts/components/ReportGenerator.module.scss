@@ -1,0 +1,33 @@
+.container {
+    margin-top: 20px;
+
+    .reportHeader {
+        margin-bottom: 20px;
+        text-align: center;
+
+        h3 {
+            margin-bottom: 8px;
+        }
+    }
+
+    .summarySection {
+        margin-bottom: 30px;
+
+        .summaryCard {
+            text-align: center;
+
+            h2 {
+                margin-bottom: 0;
+                color: #1890ff;
+            }
+        }
+    }
+
+    .chartSection {
+        margin-bottom: 30px;
+    }
+
+    .dataSection {
+        margin-bottom: 20px;
+    }
+}

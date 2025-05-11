@@ -52,7 +52,7 @@ const DefaultLayout: FC<DefaultLayoutProps> = ({ children }) => {
         </Layout.Header>
         <Layout.Content style={{ margin: '24px' }}>{children || <Outlet />}</Layout.Content>
         <Layout.Footer>
-          <h1 className={styles.footer}>Copyright © 2023 MxO. All Rights Reserved</h1>
+          <h1 className={styles.footer}></h1>
         </Layout.Footer>
       </Layout>
     </Layout>

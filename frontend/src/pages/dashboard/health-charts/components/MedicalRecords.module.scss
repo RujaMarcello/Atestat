@@ -1,0 +1,77 @@
+.container {
+    margin-top: 20px;
+}
+
+.patientSelector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.tabs {
+    margin-top: 16px;
+}
+
+// Stiluri pentru secțiunea ECG
+.ecgContainer {
+    padding: 12px 0;
+}
+
+.ecgCard {
+    margin-bottom: 8px;
+
+    p {
+        margin-bottom: 10px;
+    }
+}
+
+.ecgGraph {
+    margin-top: 16px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 4px;
+    padding: 16px;
+    background-color: #fafafa;
+}
+
+.mockEcg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 120px;
+    color: #8c8c8c;
+}
+
+// Stiluri pentru consultații
+.consultationsContainer {
+    padding: 12px 0;
+}
+
+.consultationCard {
+    margin-bottom: 8px;
+
+    p {
+        margin-bottom: 10px;
+    }
+}
+
+// Stiluri pentru alerte
+.alertsContainer {
+    padding: 12px 0;
+}
+
+.alertCard {
+    margin-bottom: 8px;
+
+    p {
+        margin-bottom: 10px;
+    }
+}
+
+.alarmCard {
+    border-left: 4px solid #ff4d4f;
+}
+
+.warningCard {
+    border-left: 4px solid #faad14;
+}
