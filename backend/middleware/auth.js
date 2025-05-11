@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const config = process.env;
-const pool = require("../pool");
+const { auth } = require('../firebase');
+
 const verifyToken = (req, res, next) => {
   const token = req.body.token || req.query.token || req.headers["token"];
   if (!token) {

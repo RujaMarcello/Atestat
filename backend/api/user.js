@@ -1,38 +1,50 @@
-const pool = require("../pool");
 const router = require("express").Router();
 const { verifyToken, authRole } = require("../middleware/auth");
-const { isEmailValid } = require("../helper/helper");
-const { ROLE } = require("../helper/roles");
+const { isEmailValid } = require("../helper/firebase-helper");
+const { db } = require('../firebase');
+const {
+  collection, doc, getDoc, getDocs, updateDoc, query,
+  where, limit, startAfter, orderBy
+} = require('firebase/firestore');
+const ROLE = {
+  SUPERADMIN: 'SUPERADMIN',
+  ADMIN: 'ADMIN',
+  USER: 'USER'
+};
 
 router.get("/user/current", verifyToken, async (req, res) => {
   try {
-    const id = req.user.id;
-    const information = await pool.query(`SELECT * 
-      FROM users
-      INNER JOIN users_roles
-      ON users.id = users_roles.user_id
-      INNER JOIN roles
-      ON users_roles.role_id = roles.id
-      WHERE users_roles.user_id = '${id}'`);
+    const userId = req.user.id;
+
+    // Obținem documentul utilizatorului din colecția users
+    const userRef = doc(db, "users", userId);
+    const userDoc = await getDoc(userRef);
+
+    if (!userDoc.exists()) {
+      return res.status(404).json("User not found");
+    }
+
+    const userData = userDoc.data();
 
     const response = {
-      id: information.rows[0].user_id,
-      firstName: information.rows[0].first_name,
-      lastName: information.rows[0].last_name,
-      email: information.rows[0].email,
-      city: information.rows[0].city,
-      state: information.rows[0].state,
-      country: information.rows[0].country,
-      profilePictureUrl: information.rows[0].profile_picture_url,
+      id: userId,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      city: userData.city || null,
+      state: userData.state || null,
+      country: userData.country || null,
+      profilePictureUrl: userData.profilePictureUrl || null,
       userRole: {
-        id: information.rows[0].role_id,
-        name: information.rows[0].role,
+        id: userData.role === ROLE.SUPERADMIN ? 1 : userData.role === ROLE.ADMIN ? 2 : 3,
+        name: userData.role || ROLE.USER,
       },
     };
 
     return res.status(200).send(response);
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return res.status(500).json("Server error");
   }
 });
 
@@ -41,31 +53,39 @@ router.get(
   verifyToken,
   authRole([ROLE.SUPERADMIN, ROLE.ADMIN]),
   async (req, res) => {
-    const { email } = req.query;
-    const response = await pool.query(
-      `SELECT  *
-    FROM users
-    INNER JOIN users_roles
-    ON users.id = users_roles.user_id
-    
-    INNER JOIN roles
-    ON users_roles.role_id = roles.id
-    WHERE users.email='${email}'`
-    );
-    const user = {
-      firstName: response?.rows[0]?.first_name,
-      lastName: response?.rows[0]?.last_name,
-      email: response?.rows[0]?.email,
-      city: response?.rows[0]?.city,
-      state: response?.rows[0]?.state,
-      country: response?.rows[0]?.country,
-      profilePictureUrl: response?.rows[0]?.profile_picture_url,
-      userRole: {
-        id: response?.rows[0]?.role_id,
-        name: response?.rows[0]?.role,
-      },
-    };
-    return res.status(200).send(user);
+    try {
+      const { email } = req.query;
+
+      // Căutăm utilizatorul după email
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("email", "==", email));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        return res.status(404).json("User not found");
+      }
+
+      const userData = querySnapshot.docs[0].data();
+
+      const user = {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        city: userData.city || null,
+        state: userData.state || null,
+        country: userData.country || null,
+        profilePictureUrl: userData.profilePictureUrl || null,
+        userRole: {
+          id: userData.role === ROLE.SUPERADMIN ? 1 : userData.role === ROLE.ADMIN ? 2 : 3,
+          name: userData.role || ROLE.USER,
+        },
+      };
+
+      return res.status(200).send(user);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json("Server error");
+    }
   }
 );
 
@@ -74,36 +94,65 @@ router.put(
   verifyToken,
   authRole([ROLE.SUPERADMIN]),
   async (req, res) => {
-    const { id, email } = req.query;
-    await pool.query(`
-    UPDATE users_roles AS ur
-    SET role_id = ${id}
-    FROM users AS u
-    WHERE u.email = '${email}'
-    AND ur.user_id = u.id;`);
+    try {
+      const { id, email } = req.query;
+      let newRole = ROLE.USER;
 
-    return res.status(200).json("Role has been updated");
+      // Convertim id-ul numeric în rolul corespunzător
+      if (id === '1') newRole = ROLE.SUPERADMIN;
+      else if (id === '2') newRole = ROLE.ADMIN;
+
+      // Căutăm utilizatorul după email
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("email", "==", email));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        return res.status(404).json("User not found");
+      }
+
+      // Actualizăm rolul utilizatorului
+      const userDoc = querySnapshot.docs[0];
+      await updateDoc(doc(db, "users", userDoc.id), { role: newRole });
+
+      return res.status(200).json("Role has been updated");
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json("Server error");
+    }
   }
 );
 
 router.put("/user/current", verifyToken, async (req, res) => {
-  const data = await req.body;
-  const emailIsValid = await isEmailValid(data.email);
-  const id = req.user.id;
+  try {
+    const data = await req.body;
+    const id = req.user.id;
+    const emailIsValid = await isEmailValid(data.email);
 
-  if (!!emailIsValid) {
-    if (emailIsValid.rows[0].id !== id) {
-      return res.status(409).send("Email alredy existing");
+    if (!!emailIsValid) {
+      if (emailIsValid.rows[0].id !== id) {
+        return res.status(409).send("Email already existing");
+      }
     }
+
+    // Actualizăm datele utilizatorului
+    const userRef = doc(db, "users", id);
+    await updateDoc(userRef, {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      city: data.city || null,
+      state: data.state || null,
+      country: data.country || null,
+      profilePictureUrl: data.profilePictureUrl || null
+    });
+
+    req.user.email = data.email;
+    return res.status(200).json("Data has been updated");
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json("Server error");
   }
-
-  req.user.email = data.email;
-  const response = await pool.query(
-    `UPDATE users SET first_name = '${data.firstName}' , last_name = '${data.lastName}' , email = '${data.email}', city = '${data.city}', state= '${data.state}',
-       country='${data.country}', profile_picture_url = '${data.profilePictureUrl}' WHERE id= '${req.user.id}'`
-  );
-
-  return res.status(200).json("Data has been updated");
 });
 
 router.get(
@@ -111,35 +160,40 @@ router.get(
   verifyToken,
   authRole([ROLE.SUPERADMIN, ROLE.ADMIN]),
   async (req, res) => {
-    const page = req.query.page;
-    const startIndex = (page - 1) * 10;
-    const endIndex = page * 10;
-
     try {
-      const response =
-        await pool.query(`SELECT  users.first_name, users.last_name, users.profile_picture_url, users.email, users.created_at, roles.id,
-    roles.role ,users_roles.user_id
-    FROM users
-    INNER JOIN users_roles
-    ON users.id = users_roles.user_id
-    
-    INNER JOIN roles
-    ON users_roles.role_id = roles.id`);
-      const usersResponse = response.rows.map((el) => {
+      const page = req.query.page || 1;
+      const perPage = 10;
+
+      // Obținem toți utilizatorii
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, orderBy("createdAt", "desc"));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        return res.status(200).send({ page: 0, data: [] });
+      }
+
+      const usersResponse = querySnapshot.docs.map(doc => {
+        const userData = doc.data();
         return {
-          id: el.user_id,
-          firstName: el.first_name,
-          lastName: el.last_name,
-          email: el.email,
-          created_at: el.created_at,
-          profilePictureUrl: el.profile_picture_url,
+          id: doc.id,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          email: userData.email,
+          created_at: userData.createdAt ? userData.createdAt.toDate() : new Date(),
+          profilePictureUrl: userData.profilePictureUrl || null,
           userRole: {
-            id: el.id,
-            name: el.role,
+            id: userData.role === ROLE.SUPERADMIN ? 1 : userData.role === ROLE.ADMIN ? 2 : 3,
+            name: userData.role || ROLE.USER,
           },
         };
       });
+
+      // Paginarea
+      const startIndex = (page - 1) * perPage;
+      const endIndex = page * perPage;
       const data = usersResponse.slice(startIndex, endIndex);
+
       const dataResponse = {
         page: usersResponse.length,
         data: data,
@@ -147,7 +201,8 @@ router.get(
 
       return res.status(200).send(dataResponse);
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      return res.status(500).json("Server error");
     }
   }
 );

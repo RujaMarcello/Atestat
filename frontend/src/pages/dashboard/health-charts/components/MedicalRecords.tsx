@@ -1,386 +1,623 @@
 import { FC, useState, useEffect } from 'react';
-import { Card, Select, Tabs, Typography, Row, Col, Timeline, Divider, Empty } from 'antd';
+import { Card, Tabs, Typography, Row, Col, Timeline, Divider, Empty, message, Spin } from 'antd';
 import ReactApexChart from 'react-apexcharts';
 import { HeartOutlined, ArrowUpOutlined, ArrowDownOutlined, FieldTimeOutlined } from '@ant-design/icons';
 import styles from './MedicalRecords.module.scss';
+import PatientSelector from './PatientSelector';
+import { db } from '../../../../firebase';
+import { doc, getDoc, collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
 
-const { Option } = Select;
 const { TabPane } = Tabs;
 const { Title, Text } = Typography;
 
-// Date mock pentru pacienți
-const mockPatients = [
-    {
-        id: 1,
-        name: 'Popescu Ion',
-        heartRateData: {
-            dates: ['2023-03-01', '2023-03-02', '2023-03-03', '2023-03-04', '2023-03-05', '2023-03-06', '2023-03-07'],
-            values: [72, 75, 78, 71, 80, 76, 74]
-        },
-        bloodPressureData: {
-            dates: ['2023-03-01', '2023-03-02', '2023-03-03', '2023-03-04', '2023-03-05', '2023-03-06', '2023-03-07'],
-            systolic: [125, 130, 128, 135, 132, 125, 127],
-            diastolic: [85, 82, 84, 88, 85, 80, 82]
-        },
-        oxygenData: {
-            dates: ['2023-03-01', '2023-03-02', '2023-03-03', '2023-03-04', '2023-03-05', '2023-03-06', '2023-03-07'],
-            values: [97, 98, 97, 96, 98, 97, 98]
-        },
-        ecgData: [
-            {
-                date: '2023-03-07',
-                description: 'ECG de control - Ritm sinusal, frecvență 76/min',
-                note: 'Fără modificări patologice'
-            },
-            {
-                date: '2023-02-15',
-                description: 'ECG de control - Ritm sinusal, frecvență 78/min',
-                note: 'Fără modificări patologice'
-            }
-        ],
-        consultations: [
-            {
-                date: '2023-03-15',
-                doctor: 'Dr. Maria Ionescu',
-                diagnosis: 'Hipertensiune arterială controlată medicamentos',
-                prescription: 'Continuarea tratamentului actual',
-                notes: 'Revenire la control în 3 luni'
-            },
-            {
-                date: '2023-02-01',
-                doctor: 'Dr. Maria Ionescu',
-                diagnosis: 'Hipertensiune arterială',
-                prescription: 'Concor 2.5mg - 1cp/zi, Prestarium 5mg - 1cp/zi',
-                notes: 'Revenire la control în 6 săptămâni'
-            }
-        ],
-        alerts: [
-            {
-                date: '2023-03-14 08:45',
-                type: 'Avertizare',
-                message: 'Tensiune arterială ridicată (145/95 mmHg)',
-                status: 'Rezolvat'
-            },
-            {
-                date: '2023-03-10 23:15',
-                type: 'Alarmă',
-                message: 'Ritm cardiac crescut (110 BPM) în repaus',
-                status: 'Rezolvat'
-            },
-            {
-                date: '2023-03-05 16:30',
-                type: 'Avertizare',
-                message: 'Saturație oxigen scăzută temporar (94%)',
-                status: 'Rezolvat'
-            }
-        ]
-    },
-    {
-        id: 2,
-        name: 'Ionescu Maria',
-        heartRateData: {
-            dates: ['2023-03-01', '2023-03-02', '2023-03-03', '2023-03-04', '2023-03-05', '2023-03-06', '2023-03-07'],
-            values: [68, 70, 72, 69, 73, 72, 70]
-        },
-        bloodPressureData: {
-            dates: ['2023-03-01', '2023-03-02', '2023-03-03', '2023-03-04', '2023-03-05', '2023-03-06', '2023-03-07'],
-            systolic: [120, 122, 124, 120, 125, 118, 121],
-            diastolic: [78, 80, 82, 78, 80, 76, 79]
-        },
-        oxygenData: {
-            dates: ['2023-03-01', '2023-03-02', '2023-03-03', '2023-03-04', '2023-03-05', '2023-03-06', '2023-03-07'],
-            values: [98, 99, 98, 98, 99, 98, 98]
-        },
-        ecgData: [
-            {
-                date: '2023-03-05',
-                description: 'ECG de control - Ritm sinusal, frecvență 70/min',
-                note: 'Fără modificări patologice'
-            }
-        ],
-        consultations: [
-            {
-                date: '2023-03-10',
-                doctor: 'Dr. Vasile Popescu',
-                diagnosis: 'Examen periodic, stare de sănătate bună',
-                prescription: 'Fără medicație',
-                notes: 'Revenire la control în 6 luni'
-            }
-        ],
-        alerts: []
-    }
-];
-
 const MedicalRecords: FC = () => {
-    const [selectedPatient, setSelectedPatient] = useState<string | null>(null);
+    const [selectedPatient, setSelectedPatient] = useState<any>(null);
     const [patientData, setPatientData] = useState<any>(null);
+    const [valoriNormale, setValoriNormale] = useState<any>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [chartLoading, setChartLoading] = useState<boolean>(false);
+    const [pulseData, setPulseData] = useState<{ date: string; value: number }[]>([]);
 
-    // Încărcarea datelor pacientului selectat
+    // Preluăm datele complete ale pacientului din Firebase
     useEffect(() => {
-        if (selectedPatient) {
-            const patient = mockPatients.find(p => p.id.toString() === selectedPatient);
-            setPatientData(patient);
-        } else if (mockPatients.length > 0) {
-            setSelectedPatient(mockPatients[0].id.toString());
-            setPatientData(mockPatients[0]);
+        if (selectedPatient && selectedPatient.id) {
+            fetchPatientData(selectedPatient.id);
+            fetchPulseData(selectedPatient.id);
         }
     }, [selectedPatient]);
 
-    // Configurare grafic ritm cardiac
-    const heartRateOptions = {
-        chart: {
-            type: 'line' as const,
-            height: 300,
-            toolbar: {
-                show: true
+    const fetchPatientData = async (patientId: string) => {
+        try {
+            setLoading(true);
+
+            // Obținem documentul pacientului
+            const pacientDoc = await getDoc(doc(db, "pacienti", patientId));
+
+            if (pacientDoc.exists()) {
+                const pacientData = pacientDoc.data();
+                setPatientData(pacientData);
+
+                // Obținem valorile normale ale pacientului
+                if (pacientData.valoriNormaleID) {
+                    const valoriNormaleDoc = await getDoc(doc(db, "valori_normale", pacientData.valoriNormaleID));
+                    if (valoriNormaleDoc.exists()) {
+                        setValoriNormale(valoriNormaleDoc.data());
+                    }
+                }
             }
-        },
-        stroke: {
-            curve: 'smooth' as const,
-            width: 3
-        },
-        xaxis: {
-            categories: patientData?.heartRateData.dates || [],
-            title: {
-                text: 'Data'
-            }
-        },
-        yaxis: {
-            title: {
-                text: 'BPM'
-            }
-        },
-        colors: ['#FF4560'],
-        title: {
-            text: 'Evoluție Ritm Cardiac',
-            align: 'left' as const
+        } catch (error) {
+            console.error("Eroare la preluarea datelor pacientului:", error);
+            message.error("Nu s-au putut încărca datele pacientului.");
+        } finally {
+            setLoading(false);
         }
     };
 
-    const heartRateSeries = [
-        {
-            name: 'Ritm Cardiac',
-            data: patientData?.heartRateData.values || []
-        }
-    ];
+    // Preluăm datele de puls din Firestore
+    const fetchPulseData = async (patientId: string) => {
+        try {
+            setChartLoading(true);
 
-    // Configurare grafic tensiune arterială
-    const bloodPressureOptions = {
-        chart: {
-            type: 'line' as const,
-            height: 300,
-            toolbar: {
-                show: true
-            }
-        },
-        stroke: {
-            curve: 'smooth' as const,
-            width: 3
-        },
-        xaxis: {
-            categories: patientData?.bloodPressureData.dates || [],
-            title: {
-                text: 'Data'
-            }
-        },
-        yaxis: {
-            title: {
-                text: 'mmHg'
-            }
-        },
-        colors: ['#008FFB', '#00E396'],
-        title: {
-            text: 'Evoluție Tensiune Arterială',
-            align: 'left' as const
+            console.log("Preluăm datele de puls pentru pacientul cu ID:", patientId);
+
+            const pulseRef = collection(db, "puls");
+            const q = query(
+                pulseRef,
+                where("pacientID", "==", patientId)
+            );
+
+            const querySnapshot = await getDocs(q);
+            console.log(`S-au găsit ${querySnapshot.size} înregistrări de puls.`);
+
+            // Parsăm și organizăm datele
+            const pulseDataArray: { date: Date; value: number }[] = [];
+            querySnapshot.docs.forEach((doc) => {
+                const data = doc.data();
+                if (data.dataInregistrarii && data.valoare) {
+                    const dateObj = data.dataInregistrarii.toDate();
+                    pulseDataArray.push({
+                        date: dateObj,
+                        value: data.valoare
+                    });
+                }
+            });
+
+            // Sortăm datele cronologic
+            pulseDataArray.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+            // Formatăm data pentru afișare
+            const formattedData = pulseDataArray.map(item => ({
+                date: item.date.toLocaleString('ro-RO', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }),
+                value: item.value
+            }));
+
+            setPulseData(formattedData);
+            console.log("Datele de puls au fost încărcate:", formattedData);
+        } catch (error) {
+            console.error("Eroare la preluarea datelor de puls:", error);
+            message.error("Nu s-au putut încărca datele de puls.");
+        } finally {
+            setChartLoading(false);
         }
     };
 
-    const bloodPressureSeries = [
-        {
-            name: 'Sistolică',
-            data: patientData?.bloodPressureData.systolic || []
-        },
-        {
-            name: 'Diastolică',
-            data: patientData?.bloodPressureData.diastolic || []
-        }
-    ];
-
-    // Configurare grafic saturație oxigen
-    const oxygenOptions = {
-        chart: {
-            type: 'line' as const,
-            height: 300,
-            toolbar: {
-                show: true
-            }
-        },
-        stroke: {
-            curve: 'smooth' as const,
-            width: 3
-        },
-        xaxis: {
-            categories: patientData?.oxygenData.dates || [],
-            title: {
-                text: 'Data'
-            }
-        },
-        yaxis: {
-            min: 90,
-            max: 100,
-            title: {
-                text: 'SpO2 (%)'
-            }
-        },
-        colors: ['#775DD0'],
-        title: {
-            text: 'Evoluție Saturație Oxigen',
-            align: 'left' as const
-        }
+    const handlePatientSelect = (patient: any) => {
+        setSelectedPatient(patient);
     };
 
-    const oxygenSeries = [
-        {
-            name: 'Saturație Oxigen',
-            data: patientData?.oxygenData.values || []
+    const renderSimpleChart = () => {
+        if (!pulseData || pulseData.length === 0) {
+            return <div className={styles.noData}>Nu există date</div>;
         }
-    ];
+
+        // Eșantionăm datele dacă sunt prea multe pentru o afișare optimă
+        let sampleData = [...pulseData];
+        let sampleCategories = pulseData.map(item => item.date);
+
+        // Dacă avem mai mult de 500 de puncte, reducem numărul pentru performanță
+        if (pulseData.length > 500) {
+            const sampleSize = Math.ceil(pulseData.length / 500);
+            const sampledPoints: typeof pulseData = [];
+
+            for (let i = 0; i < pulseData.length; i += sampleSize) {
+                // Luăm primul punct din fiecare grup pentru a păstra tendința
+                sampledPoints.push(pulseData[i]);
+            }
+
+            sampleData = sampledPoints;
+            sampleCategories = sampledPoints.map(item => item.date);
+        }
+
+        const options = {
+            chart: {
+                type: 'line' as const,
+                height: 350,
+                width: '100%',
+                toolbar: {
+                    show: true,
+                    tools: {
+                        download: true,
+                        selection: true,
+                        zoom: true,
+                        zoomin: true,
+                        zoomout: true,
+                        pan: true,
+                        reset: true
+                    }
+                },
+                animations: {
+                    enabled: false
+                },
+                parentHeightOffset: 0
+            },
+            series: [{
+                name: 'Ritm Cardiac',
+                data: sampleData.map(item => item.value)
+            }],
+            xaxis: {
+                categories: sampleCategories,
+                labels: {
+                    rotate: -45,
+                    trim: true,
+                    hideOverlappingLabels: true,
+                    style: {
+                        fontSize: '10px',
+                        colors: '#64748B'
+                    },
+                    formatter: function (value: any) {
+                        // Păstrăm doar luna și ziua pentru o afișare mai simplă
+                        if (typeof value === 'string') {
+                            const parts = value.split(',')[0].split(' ');
+                            return parts.length > 1 ? parts[0] + ' ' + parts[1] : value;
+                        }
+                        return value;
+                    },
+                    show: true  // Menținem etichetele de pe axa X pentru orientare temporală
+                },
+                // Reducem numărul de etichete pe axa X pentru un aspect mai curat
+                tickAmount: Math.min(8, Math.max(4, Math.floor(sampleCategories.length / 40))),
+                axisBorder: {
+                    show: true,
+                    color: '#E2E8F0'
+                },
+                axisTicks: {
+                    show: false
+                }
+            },
+            yaxis: {
+                min: Math.max(20, Math.min(...sampleData.map(item => item.value)) - 10),
+                max: Math.max(...sampleData.map(item => item.value)) + 10,
+                title: {
+                    text: 'BPM',
+                    style: {
+                        color: '#64748B',
+                        fontSize: '12px'
+                    }
+                },
+                forceNiceScale: true,
+                labels: {
+                    formatter: (val: number) => Math.round(val).toString(),
+                    show: false  // Ascundem valorile de pe axa Y
+                },
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                }
+            },
+            grid: {
+                padding: {
+                    left: 10,
+                    right: 10
+                },
+                borderColor: '#F1F5F9',
+                strokeDashArray: 4,
+                xaxis: {
+                    lines: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    lines: {
+                        show: false  // Eliminăm și liniile de grid pentru un aspect mai curat
+                    }
+                }
+            },
+            stroke: {
+                curve: 'smooth' as const,
+                width: 4,  // Facem linia mai groasă pentru vizibilitate
+                colors: ['#1890ff'],
+                lineCap: 'round' as const
+            },
+            markers: {
+                size: 0,
+                hover: {
+                    size: 0
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            colors: ['#1890ff'],
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.5,
+                    opacityTo: 0.1,
+                    stops: [0, 90, 100]
+                }
+            },
+            tooltip: {
+                enabled: true,
+                shared: false,
+                intersect: false,
+                followCursor: true,
+                x: {
+                    show: true,
+                    formatter: function (val: any, opts: any) {
+                        // Formatăm data complet pentru tooltip
+                        const index = opts.dataPointIndex;
+                        if (index >= 0 && index < sampleData.length) {
+                            return sampleData[index].date;
+                        }
+                        return val;
+                    }
+                },
+                y: {
+                    formatter: function (value: number) {
+                        return value + ' BPM';
+                    },
+                    title: {
+                        formatter: () => 'Puls:'
+                    }
+                },
+                style: {
+                    fontSize: '12px'
+                },
+                marker: {
+                    show: false
+                }
+            },
+            title: {
+                text: '',  // Eliminăm titlul din interiorul graficului pentru un aspect mai curat
+                align: 'left' as const,
+                style: {
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    color: '#334155'
+                }
+            },
+            subtitle: {
+                text: '',  // Eliminăm subtitlul din interiorul graficului
+                align: 'left' as const,
+                style: {
+                    fontSize: '12px',
+                    color: '#64748B'
+                }
+            },
+            states: {
+                hover: {
+                    filter: {
+                        type: 'none'
+                    }
+                }
+            }
+        };
+
+        // Adăugăm liniile de referință pentru valorile normale de puls dacă sunt disponibile
+        if (valoriNormale && valoriNormale.minPuls && valoriNormale.maxPuls) {
+            (options as any).annotations = {
+                yaxis: [
+                    {
+                        y: valoriNormale.minPuls,
+                        borderColor: '#10B981',
+                        strokeDashArray: 5,
+                        borderWidth: 2,
+                        opacity: 0.7,
+                        label: {
+                            text: 'Min Normal',
+                            position: 'left',
+                            offsetX: 10,
+                            style: {
+                                color: '#fff',
+                                background: '#10B981',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                padding: {
+                                    left: 8,
+                                    right: 8,
+                                    top: 2,
+                                    bottom: 2
+                                }
+                            }
+                        }
+                    },
+                    {
+                        y: valoriNormale.maxPuls,
+                        borderColor: '#EF4444',
+                        strokeDashArray: 5,
+                        borderWidth: 2,
+                        opacity: 0.7,
+                        label: {
+                            text: 'Max Normal',
+                            position: 'left',
+                            offsetX: 10,
+                            style: {
+                                color: '#fff',
+                                background: '#EF4444',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                padding: {
+                                    left: 8,
+                                    right: 8,
+                                    top: 2,
+                                    bottom: 2
+                                }
+                            }
+                        }
+                    }
+                ]
+            };
+        }
+
+        return (
+            <ReactApexChart
+                options={options}
+                series={options.series}
+                type="area"
+                height={350}
+                width="100%"
+            />
+        );
+    };
+
+    const renderPatientSummary = () => {
+        if (!selectedPatient || !patientData) {
+            return <Empty description="Selectați un pacient pentru a vizualiza datele medicale" />;
+        }
+
+        return (
+            <Card className={styles.summaryCard}>
+                <Title level={4}>Sumar Pacient</Title>
+                <Row gutter={[16, 16]}>
+                    <Col span={8}>
+                        <div className={styles.infoItem}>
+                            <Text strong>Nume:</Text>
+                            <Text>{patientData.nume} {patientData.prenume}</Text>
+                        </div>
+                        <div className={styles.infoItem}>
+                            <Text strong>Vârstă:</Text>
+                            <Text>{patientData.varsta} ani</Text>
+                        </div>
+                        <div className={styles.infoItem}>
+                            <Text strong>CNP:</Text>
+                            <Text>{patientData.cnp}</Text>
+                        </div>
+                    </Col>
+                    <Col span={8}>
+                        <div className={styles.infoItem}>
+                            <Text strong>Telefon:</Text>
+                            <Text>{patientData.nrTelefon || 'N/A'}</Text>
+                        </div>
+                        <div className={styles.infoItem}>
+                            <Text strong>Email:</Text>
+                            <Text>{patientData.email || 'N/A'}</Text>
+                        </div>
+                        <div className={styles.infoItem}>
+                            <Text strong>Profesie:</Text>
+                            <Text>{patientData.profesie || 'N/A'}</Text>
+                        </div>
+                    </Col>
+                    <Col span={8}>
+                        <div className={styles.infoItem}>
+                            <Text strong>Adresă:</Text>
+                            <Text>{[patientData.strada, patientData.numar, patientData.bloc, patientData.apartament]
+                                .filter(Boolean).join(', ')}</Text>
+                        </div>
+                        <div className={styles.infoItem}>
+                            <Text strong>Oraș:</Text>
+                            <Text>{patientData.oras || 'N/A'}</Text>
+                        </div>
+                        <div className={styles.infoItem}>
+                            <Text strong>Județ:</Text>
+                            <Text>{patientData.judet || 'N/A'}</Text>
+                        </div>
+                    </Col>
+                </Row>
+
+                <Divider />
+
+                <Title level={4}>Istoric Medical</Title>
+                <Row gutter={[16, 16]}>
+                    <Col span={24}>
+                        <div className={styles.infoItem}>
+                            <Text strong>Istoric Medical:</Text>
+                            <Text>{patientData.istoricMedical || 'Nu există informații'}</Text>
+                        </div>
+                    </Col>
+                    <Col span={24}>
+                        <div className={styles.infoItem}>
+                            <Text strong>Alergii:</Text>
+                            <Text>{Array.isArray(patientData.alergii) && patientData.alergii.length > 0
+                                ? patientData.alergii.join(', ')
+                                : 'Nu există alergii înregistrate'}</Text>
+                        </div>
+                    </Col>
+                </Row>
+
+                {valoriNormale && (
+                    <>
+                        <Divider />
+                        <Title level={4}>Valori Normale</Title>
+                        <Row gutter={[16, 16]}>
+                            <Col span={8}>
+                                <Card className={styles.valueCard}>
+                                    <HeartOutlined className={styles.valueIcon} />
+                                    <div>
+                                        <Text strong>Ritm Cardiac</Text>
+                                        <div className={styles.valueRange}>
+                                            <Text>{valoriNormale.minPuls} - {valoriNormale.maxPuls} BPM</Text>
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Col>
+                            <Col span={8}>
+                                <Card className={styles.valueCard}>
+                                    <ArrowUpOutlined className={styles.valueIcon} />
+                                    <div>
+                                        <Text strong>Tensiune Sistolică</Text>
+                                        <div className={styles.valueRange}>
+                                            <Text>{valoriNormale.minSistolic || 110} - {valoriNormale.maxSistolic || 140} mmHg</Text>
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Col>
+                            <Col span={8}>
+                                <Card className={styles.valueCard}>
+                                    <ArrowDownOutlined className={styles.valueIcon} />
+                                    <div>
+                                        <Text strong>Tensiune Diastolică</Text>
+                                        <div className={styles.valueRange}>
+                                            <Text>{valoriNormale.minDiastolic || 70} - {valoriNormale.maxDiastolic || 90} mmHg</Text>
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Col>
+                        </Row>
+                    </>
+                )}
+            </Card>
+        );
+    };
+
+    const renderCharts = () => {
+        if (!selectedPatient) {
+            return <Empty description="Selectați un pacient pentru a vizualiza graficele de evoluție" />;
+        }
+
+        if (chartLoading) {
+            return (
+                <Card className={styles.chartCard}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '50px' }}>
+                        <Spin size="large" />
+                        <Text style={{ marginTop: 16, color: '#64748B' }}>Se încarcă datele de monitorizare...</Text>
+                    </div>
+                </Card>
+            );
+        }
+
+        if (pulseData.length === 0) {
+            return (
+                <Card className={styles.chartCard}>
+                    <Empty
+                        description={
+                            <span>
+                                Nu există date de puls pentru pacientul <Text strong>{selectedPatient?.nume} {selectedPatient?.prenume}</Text>
+                            </span>
+                        }
+                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    />
+                </Card>
+            );
+        }
+
+        return (
+            <Card
+                className={styles.chartCard}
+                title={
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Text style={{ fontSize: '16px', fontWeight: 600, color: '#334155' }}>
+                            <HeartOutlined style={{ marginRight: 8, color: '#FF4560' }} />
+                            Monitorizare Ritm Cardiac
+                        </Text>
+                        <Text style={{ fontSize: '14px', color: '#64748B' }}>
+                            {pulseData.length > 0 ?
+                                `Ultima actualizare: ${pulseData[pulseData.length - 1].date}` :
+                                'Nu sunt date disponibile'}
+                        </Text>
+                    </div>
+                }
+            >
+                <div className={styles.chartWrapper}>
+                    {renderSimpleChart()}
+                </div>
+
+                <div className={styles.chartStats}>
+                    <div className={styles.statItem}>
+                        <Text strong>Total înregistrări:</Text>
+                        <Text>{pulseData.length}</Text>
+                    </div>
+                    <div className={styles.statItem}>
+                        <Text strong>Ultima valoare:</Text>
+                        <Text>{pulseData.length > 0 ? `${pulseData[pulseData.length - 1].value} BPM (${pulseData[pulseData.length - 1].date})` : 'N/A'}</Text>
+                    </div>
+                    <div className={styles.statItem}>
+                        <Text strong>Valoare minimă:</Text>
+                        <Text>{pulseData.length > 0 ? `${Math.min(...pulseData.map(item => item.value))} BPM` : 'N/A'}</Text>
+                    </div>
+                    <div className={styles.statItem}>
+                        <Text strong>Valoare maximă:</Text>
+                        <Text>{pulseData.length > 0 ? `${Math.max(...pulseData.map(item => item.value))} BPM` : 'N/A'}</Text>
+                    </div>
+                    <div className={styles.statItem}>
+                        <Text strong>Valoare medie:</Text>
+                        <Text>
+                            {pulseData.length > 0
+                                ? `${Math.round(pulseData.reduce((sum, item) => sum + item.value, 0) / pulseData.length)} BPM`
+                                : 'N/A'}
+                        </Text>
+                    </div>
+                </div>
+            </Card>
+        );
+    };
+
+    // Effect pentru actualizarea graficului când datele se modifică
+    useEffect(() => {
+        if (pulseData.length > 0) {
+            // Forțăm o reîmprospătare completă a graficului prin actualizarea seriei
+            const chartId = 'pulse-chart';
+
+            // Curățăm timer-ul la unmount
+            return () => {
+                // Oprim orice actualizări în curs
+                console.log('Cleanup chart data');
+            };
+        }
+    }, [pulseData]);
 
     return (
         <div className={styles.container}>
-            <Card title="Date Medicale Pacient">
-                <div className={styles.patientSelector}>
-                    <Text strong>Selectează Pacient:</Text>
-                    <Select
-                        style={{ width: 300 }}
-                        value={selectedPatient}
-                        onChange={setSelectedPatient}
-                    >
-                        {mockPatients.map(patient => (
-                            <Option key={patient.id} value={patient.id.toString()}>
-                                {patient.name}
-                            </Option>
-                        ))}
-                    </Select>
-                </div>
+            <Row gutter={[16, 16]}>
+                <Col span={24}>
+                    <PatientSelector onPatientSelect={handlePatientSelect} />
+                </Col>
 
-                {patientData && (
-                    <Tabs defaultActiveKey="evolution" className={styles.tabs}>
-                        <TabPane tab="Evoluție" key="evolution">
-                            <Row gutter={[16, 16]}>
-                                <Col span={24}>
-                                    <ReactApexChart
-                                        options={heartRateOptions}
-                                        series={heartRateSeries}
-                                        type="line"
-                                        height={300}
-                                    />
-                                </Col>
-                                <Col span={24}>
-                                    <ReactApexChart
-                                        options={bloodPressureOptions}
-                                        series={bloodPressureSeries}
-                                        type="line"
-                                        height={300}
-                                    />
-                                </Col>
-                                <Col span={24}>
-                                    <ReactApexChart
-                                        options={oxygenOptions}
-                                        series={oxygenSeries}
-                                        type="line"
-                                        height={300}
-                                    />
-                                </Col>
-                            </Row>
-                        </TabPane>
-
-                        <TabPane tab="ECG" key="ecg">
-                            {patientData.ecgData.length > 0 ? (
-                                <div className={styles.ecgContainer}>
-                                    <Timeline>
-                                        {patientData.ecgData.map((ecg: any, index: number) => (
-                                            <Timeline.Item
-                                                key={index}
-                                                color="blue"
-                                                dot={<HeartOutlined />}
-                                            >
-                                                <Card className={styles.ecgCard}>
-                                                    <Title level={5}>{ecg.date}</Title>
-                                                    <Text strong>{ecg.description}</Text>
-                                                    <p>{ecg.note}</p>
-                                                    <div className={styles.ecgGraph}>
-                                                        {/* Aici ar fi integrat un grafic ECG real */}
-                                                        <div className={styles.mockEcg}>
-                                                            <p><i>Vizualizare ECG nu este disponibilă în această versiune demo</i></p>
-                                                        </div>
-                                                    </div>
-                                                </Card>
-                                            </Timeline.Item>
-                                        ))}
-                                    </Timeline>
+                <Col span={24}>
+                    <Tabs defaultActiveKey="summary" className={styles.tabs}>
+                        <TabPane tab="Sumar Pacient" key="summary">
+                            {loading ? (
+                                <div style={{ display: 'flex', justifyContent: 'center', padding: '50px' }}>
+                                    <Spin size="large" tip="Se încarcă datele pacientului..." />
                                 </div>
                             ) : (
-                                <Empty description="Nu există date ECG înregistrate" />
+                                renderPatientSummary()
                             )}
                         </TabPane>
 
-                        <TabPane tab="Consultații" key="consultations">
-                            {patientData.consultations.length > 0 ? (
-                                <div className={styles.consultationsContainer}>
-                                    <Timeline>
-                                        {patientData.consultations.map((consultation: any, index: number) => (
-                                            <Timeline.Item
-                                                key={index}
-                                                color="green"
-                                                dot={<FieldTimeOutlined />}
-                                            >
-                                                <Card className={styles.consultationCard}>
-                                                    <Title level={5}>{consultation.date}</Title>
-                                                    <Text strong>{consultation.doctor}</Text>
-                                                    <Divider />
-                                                    <p><strong>Diagnostic:</strong> {consultation.diagnosis}</p>
-                                                    <p><strong>Prescripție:</strong> {consultation.prescription}</p>
-                                                    <p><strong>Observații:</strong> {consultation.notes}</p>
-                                                </Card>
-                                            </Timeline.Item>
-                                        ))}
-                                    </Timeline>
-                                </div>
-                            ) : (
-                                <Empty description="Nu există consultații înregistrate" />
-                            )}
-                        </TabPane>
-
-                        <TabPane tab="Alerte" key="alerts">
-                            {patientData.alerts.length > 0 ? (
-                                <div className={styles.alertsContainer}>
-                                    <Timeline>
-                                        {patientData.alerts.map((alert: any, index: number) => (
-                                            <Timeline.Item
-                                                key={index}
-                                                color={alert.type === 'Alarmă' ? 'red' : 'orange'}
-                                                dot={alert.type === 'Alarmă' ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
-                                            >
-                                                <Card
-                                                    className={`${styles.alertCard} ${alert.type === 'Alarmă' ? styles.alarmCard : styles.warningCard}`}
-                                                >
-                                                    <Title level={5}>{alert.date}</Title>
-                                                    <Text strong>{alert.type}</Text>
-                                                    <p>{alert.message}</p>
-                                                    <Text type="secondary">Status: {alert.status}</Text>
-                                                </Card>
-                                            </Timeline.Item>
-                                        ))}
-                                    </Timeline>
-                                </div>
-                            ) : (
-                                <Empty description="Nu există alerte înregistrate" />
-                            )}
+                        <TabPane tab="Grafice Evoluție" key="charts">
+                            {renderCharts()}
                         </TabPane>
                     </Tabs>
-                )}
-            </Card>
+                </Col>
+            </Row>
         </div>
     );
 };

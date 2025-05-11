@@ -4,6 +4,10 @@ const app = express();
 const port = 3001;
 const swaggerUI = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
+require('dotenv').config();
+
+// Hardcoded token key
+process.env.TOKEN_KEY = "medicarenow_jwt_secret_key_12345";
 
 app.use(cors());
 app.use(express.json());
@@ -29,6 +33,7 @@ const specs = swaggerJsDoc(options);
 app.use("/api", require("./api/auth"));
 app.use("/api", require("./api/user"));
 app.use("/api", require("./api/chat"));
+app.use("/api", require("./api/patients"));
 app.use(
   "/api/swagger",
   swaggerUI.serve,

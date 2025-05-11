@@ -1,8 +1,10 @@
 .container {
+    width: 100%;
+    padding: 0;
     margin-top: 20px;
 
     .controlsCard {
-        margin-bottom: 20px;
+        margin-bottom: 16px;
 
         label {
             display: block;
@@ -13,5 +15,25 @@
 
     .chartCard {
         min-height: 400px;
+        margin-bottom: 16px;
+    }
+}
+
+.noPatient {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 350px;
+    color: #999;
+    font-size: 16px;
+}
+
+.simulationCard {
+    margin-bottom: 16px;
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
     }
 }
