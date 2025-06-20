@@ -17,6 +17,7 @@ interface Patient {
     nume: string;
     prenume: string;
     cnp: string;
+    email: string;
 }
 
 const PatientSelector: FC<PatientSelectorProps> = ({ onPatientSelect, selectedPatientId }) => {
@@ -46,7 +47,6 @@ const PatientSelector: FC<PatientSelectorProps> = ({ onPatientSelect, selectedPa
                 const querySnapshot = await getDocs(q);
 
                 if (querySnapshot.empty) {
-                    message.error("Nu s-a găsit niciun pacient asociat contului tău");
                     setLoading(false);
                     return;
                 }
@@ -58,7 +58,8 @@ const PatientSelector: FC<PatientSelectorProps> = ({ onPatientSelect, selectedPa
                     id: patientDoc.id,
                     nume: patientData.nume || '',
                     prenume: patientData.prenume || '',
-                    cnp: patientData.cnp || ''
+                    cnp: patientData.cnp || '',
+                    email: patientData.email || ''
                 };
 
                 setPatients([patient]);
@@ -79,7 +80,8 @@ const PatientSelector: FC<PatientSelectorProps> = ({ onPatientSelect, selectedPa
                         id: doc.id,
                         nume: data.nume || '',
                         prenume: data.prenume || '',
-                        cnp: data.cnp || ''
+                        cnp: data.cnp || '',
+                        email: data.email || ''
                     });
                 });
 

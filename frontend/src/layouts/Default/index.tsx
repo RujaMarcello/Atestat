@@ -8,7 +8,6 @@ import HeaderContent from '../../components/header-content';
 import SuperAdminDashboard from '../../components/superadmin-menu';
 import UserDashboard from '../../components/user-menu';
 import { Role } from '../../context/Role';
-import { ReactComponent as Logo } from '../../pages/svg/logo.svg';
 import styles from './index.module.scss';
 
 interface DefaultLayoutProps {
@@ -31,9 +30,6 @@ const DefaultLayout: FC<DefaultLayoutProps> = ({ children }) => {
         collapsedWidth={64}
         width={200}
       >
-        <div className={styles.logo}>
-          <Logo className={styles.svgLogo} />
-        </div>
         <Role renderIf={({ SUPERADMIN }) => SUPERADMIN}>
           <SuperAdminDashboard />
         </Role>

@@ -5,6 +5,7 @@ import styles from './SensorData.module.scss';
 import PatientSelector from './PatientSelector';
 import { db } from '../../../../firebase';
 import { collection, query, orderBy, limit, onSnapshot, addDoc, getDocs, Timestamp, where } from 'firebase/firestore';
+import axios from 'axios';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -329,6 +330,7 @@ const SensorData: FC = () => {
     const chartUpdateIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const [firestoreInitialized, setFirestoreInitialized] = useState<boolean>(false);
     const [humidityCollectionInitialized, setHumidityCollectionInitialized] = useState<boolean>(false);
+    const unsubscribePulseListener = useRef<(() => void) | null>(null);
 
     // Funcție pentru a verifica și inițializa colecțiile
     const checkFirestoreCollections = async () => {
@@ -357,95 +359,6 @@ const SensorData: FC = () => {
         checkFirestoreCollections();
     }, []);
 
-    // Funcție pentru a încărca datele de puls din Firestore
-    const fetchPulseData = async () => {
-        if (!selectedPatient) return;
-
-        try {
-            const pulseRef = collection(db, "puls");
-            const q = query(
-                pulseRef,
-                where("pacientID", "==", selectedPatient.id)
-            );
-
-            console.log("Interogare pentru pacientul cu ID:", selectedPatient.id);
-            const querySnapshot = await getDocs(q);
-            console.log("Număr de documente returnate:", querySnapshot.size);
-
-            // Array simplu pentru date
-            const pulseData: number[] = [];
-            const timestamps: string[] = [];
-            const timestampObjects: Date[] = []; // Pentru sortare
-
-            querySnapshot.docs.forEach((doc) => {
-                const data = doc.data();
-
-                if (data.dataInregistrarii && data.valoare) {
-                    const timestamp = data.dataInregistrarii.toDate();
-                    timestampObjects.push(timestamp);
-                    pulseData.push(data.valoare);
-                    timestamps.push(timestamp.toLocaleTimeString('ro-RO', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit'
-                    }));
-                }
-            });
-
-            // Sortăm datele cronologic folosind timestamp-urile ca obiecte Date pentru acuratețe
-            const combinedData = timestampObjects.map((timestamp, index) => ({
-                timestamp,
-                value: pulseData[index],
-                displayTime: timestamps[index]
-            }));
-
-            combinedData.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-
-            // Extragem datele sortate
-            const sortedPulseData = combinedData.map(item => item.value);
-            const sortedTimestamps = combinedData.map(item => item.displayTime);
-
-            if (sortedPulseData.length === 0) {
-                message.warning("Nu există date de puls pentru acest pacient.");
-                return;
-            }
-
-            // Actualizăm numărul de puncte pentru coerență cu updateChartWithNewValue
-            const maxPoints = 30;
-            const limitedPulseData = sortedPulseData.slice(-maxPoints);
-            const limitedTimestamps = sortedTimestamps.slice(-maxPoints);
-
-            // Actualizare directă, fără animații
-            setHeartRateData({
-                series: [{
-                    name: 'Ritm Cardiac (BPM)',
-                    data: limitedPulseData
-                }],
-                options: {
-                    ...initialHeartRateData.options, // Folosim opțiunile inițiale fără animații
-                    xaxis: {
-                        ...initialHeartRateData.options.xaxis,
-                        type: 'category',
-                        categories: limitedTimestamps
-                    },
-                    title: {
-                        ...initialHeartRateData.options.title,
-                        text: `Monitorizare Ritm Cardiac - ${selectedPatient?.nume || ''} ${selectedPatient?.prenume || ''}`
-                    },
-                    // Actualizăm limitele axei Y pentru a corespunde cu noile valori posibile
-                    yaxis: {
-                        ...initialHeartRateData.options.yaxis,
-                        min: 50,
-                        max: 130
-                    }
-                }
-            });
-        } catch (error) {
-            console.error("Eroare la încărcarea datelor de puls:", error);
-            message.error("Nu s-au putut încărca datele de puls.");
-        }
-    };
-
     // Funcția pentru adăugarea unei noi valori de puls
     const addPulseValue = async (value: number) => {
         if (!selectedPatient) {
@@ -453,14 +366,35 @@ const SensorData: FC = () => {
             return;
         }
 
+        if (!selectedPatient.email) {
+            message.error("Pacientul selectat nu are o adresă de email asociată.");
+            return;
+        }
+
         try {
+            // Găsim utilizatorul care corespunde emailului pacientului
+            console.log('Căutăm utilizatorul pentru adăugarea pulsului, email:', selectedPatient.email);
+            const usersRef = collection(db, 'users');
+            const qUser = query(usersRef, where('email', '==', selectedPatient.email));
+            const userSnapshot = await getDocs(qUser);
+
+            if (userSnapshot.empty) {
+                console.error('Nu s-a găsit utilizatorul cu emailul:', selectedPatient.email);
+                message.error('Nu s-a găsit utilizatorul asociat cu acest pacient.');
+                return;
+            }
+
+            const userDoc = userSnapshot.docs[0];
+            const userId = userDoc.id;
+            console.log('Utilizator găsit pentru adăugarea pulsului, ID:', userId);
+
             const currentTime = new Date();
 
-            console.log("Se adaugă valoare de puls pentru pacientul:", selectedPatient);
+            console.log("Se adaugă valoare de puls pentru utilizatorul:", userId);
             console.log("Valoare:", value, "Timestamp:", currentTime);
 
             const newData = {
-                pacientID: selectedPatient.id,
+                pacientID: userId, // Folosim ID-ul utilizatorului găsit
                 valoare: value,
                 dataInregistrarii: Timestamp.fromDate(currentTime)
             };
@@ -470,55 +404,20 @@ const SensorData: FC = () => {
 
             console.log("Document adăugat cu ID:", docRef.id);
 
-            // Actualizăm imediat datele locale pentru o experiență mai fluidă
-            updateChartWithNewValue(value, currentTime);
+            // Nu mai actualizăm manual datele locale, listener-ul în timp real va face asta automat
 
-            message.success(`Valoare de puls adăugată: ${value} BPM`);
+            // Verificăm automat parametrii vitali după adăugarea unei valori noi
+            try {
+                console.log("Verificăm automat parametrii vitali după adăugarea unui puls nou...");
+                const response = await axios.get('http://localhost:3001/api/monitor-heart-rates');
+                console.log("Verificare automată a parametrilor vitali completată:", response.data);
+            } catch (error) {
+                console.error("Eroare la verificarea automată a parametrilor vitali:", error);
+            }
         } catch (error) {
             console.error("Eroare la adăugarea valorii de puls:", error);
             message.error("Nu s-a putut adăuga valoarea de puls.");
         }
-    };
-
-    // Funcția pentru a actualiza chart-ul cu o nouă valoare (optimizată pentru actualizare instantanee)
-    const updateChartWithNewValue = (value: number, timestamp: Date) => {
-        const newTimestamp = timestamp.toLocaleTimeString('ro-RO', {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-        });
-
-        // Actualizare imediată, fără tranziții
-        setHeartRateData(prevData => {
-            // Verificăm dacă avem serii și categorii existente
-            const existingSeries = prevData.series[0].data as number[];
-            const existingCategories = prevData.options.xaxis.categories as string[];
-
-            // Mărim numărul de puncte afișate pentru a vedea mai multe actualizări
-            const maxPoints = 30;
-            const newSeries = [...existingSeries, value];
-            const newCategories = [...existingCategories, newTimestamp];
-
-            // Dacă avem prea multe puncte, eliminăm cele mai vechi
-            const slicedSeries = newSeries.length > maxPoints ?
-                newSeries.slice(-maxPoints) : newSeries;
-            const slicedCategories = newCategories.length > maxPoints ?
-                newCategories.slice(-maxPoints) : newCategories;
-
-            return {
-                series: [{
-                    name: 'Ritm Cardiac (BPM)',
-                    data: slicedSeries
-                }],
-                options: {
-                    ...prevData.options,
-                    xaxis: {
-                        ...prevData.options.xaxis,
-                        categories: slicedCategories
-                    }
-                }
-            };
-        });
     };
 
     // Funcția pentru a genera o valoare aleatorie de puls, cu variații mai mari
@@ -554,11 +453,14 @@ const SensorData: FC = () => {
             addPulseValue(pulseValue);
 
             // Setăm intervalul pentru adăugarea de valori noi mult mai rapid
-            simulationIntervalRef.current = setInterval(() => {
+            simulationIntervalRef.current = setInterval(async () => {
                 const lastValue = pulseValue;
                 const newValue = generateRandomPulseValue(lastValue);
                 setPulseValue(newValue);
-                addPulseValue(newValue);
+                await addPulseValue(newValue);
+
+                // Nu mai este nevoie să adăugăm verificarea aici, deoarece
+                // addPulseValue deja include verificarea automată a parametrilor vitali
             }, 500); // O nouă valoare la fiecare 500ms (0.5 secunde) pentru actualizări foarte rapide
 
             setSimulationRunning(true);
@@ -566,7 +468,7 @@ const SensorData: FC = () => {
         }
     };
 
-    // Funcție pentru a încărca datele de umiditate din Firestore
+    // Funcția pentru a încărca datele de umiditate din Firestore
     const fetchHumidityData = async () => {
         if (!selectedPatient) return;
 
@@ -773,15 +675,141 @@ const SensorData: FC = () => {
         }
     };
 
-    // Modificăm efectul pentru a gestiona încărcarea datelor în funcție de dataType
+    /*
+     * Efect pentru a încărca datele și – foarte important – pentru a asculta în timp
+     * real modificările din colecția `puls`. Folosim onSnapshot pentru a primi
+     * instant orice valoare nou adăugată ce corespunde pacientului selectat.
+     */
     useEffect(() => {
-        if (selectedPatient) {
-            if (dataType === 'heart-rate') {
-                fetchPulseData();
-            } else if (dataType === 'humidity') {
+        // Curățăm eventualul listener precedent
+        if (unsubscribePulseListener.current) {
+            unsubscribePulseListener.current();
+            unsubscribePulseListener.current = null;
+        }
+
+        if (!selectedPatient) {
+            // Dacă nu avem pacient selectat, doar încărcăm umiditatea (dacă e cazul)
+            if (dataType === 'humidity') {
                 fetchHumidityData();
             }
+            return;
         }
+
+        if (dataType === 'heart-rate') {
+            // Primul pas: găsim utilizatorul care corespunde emailului pacientului selectat
+            const findUserByPatientEmail = async () => {
+                try {
+                    if (!selectedPatient.email) {
+                        console.error('Pacientul selectat nu are email:', selectedPatient);
+                        message.error('Pacientul selectat nu are o adresă de email asociată.');
+                        return;
+                    }
+
+                    console.log('Căutăm utilizatorul cu emailul pacientului:', selectedPatient.email);
+
+                    // Căutăm utilizatorul în colecția 'users' după email
+                    const usersRef = collection(db, 'users');
+                    const qUser = query(usersRef, where('email', '==', selectedPatient.email));
+                    const userSnapshot = await getDocs(qUser);
+
+                    if (userSnapshot.empty) {
+                        console.error('Nu s-a găsit utilizatorul cu emailul:', selectedPatient.email);
+                        message.error('Nu s-a găsit utilizatorul asociat cu acest pacient.');
+                        return;
+                    }
+
+                    const userDoc = userSnapshot.docs[0];
+                    const userId = userDoc.id;
+                    console.log('Utilizator găsit cu ID:', userId);
+
+                    // Al doilea pas: configurăm listenerul în timp real pentru datele de puls
+                    const pulseRef = collection(db, 'puls');
+                    const qPulse = query(
+                        pulseRef,
+                        where('pacientID', '==', userId), // Folosim ID-ul utilizatorului găsit
+                        orderBy('dataInregistrarii', 'asc')
+                    );
+
+                    console.log('Configurez listener în timp real pentru utilizatorul:', userId);
+
+                    unsubscribePulseListener.current = onSnapshot(qPulse, (querySnapshot) => {
+                        console.log('Listener activat! Numărul de documente primite:', querySnapshot.size);
+                        const pulseValues: number[] = [];
+                        const timestamps: string[] = [];
+
+                        querySnapshot.forEach((doc) => {
+                            const data = doc.data();
+                            console.log('Document primit:', { id: doc.id, data });
+                            if (data.dataInregistrarii && data.valoare) {
+                                const ts: Date = data.dataInregistrarii.toDate();
+                                pulseValues.push(data.valoare);
+                                timestamps.push(
+                                    ts.toLocaleTimeString('ro-RO', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        second: '2-digit'
+                                    })
+                                );
+                            }
+                        });
+
+                        console.log('Valori procesate pentru grafic:', { pulseValues, timestamps });
+
+                        // Păstrăm doar ultimele 30 de puncte pentru claritate
+                        const maxPoints = 30;
+                        const limitedValues = pulseValues.slice(-maxPoints);
+                        const limitedTimestamps = timestamps.slice(-maxPoints);
+
+                        setHeartRateData({
+                            series: [
+                                {
+                                    name: 'Ritm Cardiac (BPM)',
+                                    data: limitedValues
+                                }
+                            ],
+                            options: {
+                                ...initialHeartRateData.options,
+                                xaxis: {
+                                    ...initialHeartRateData.options.xaxis,
+                                    type: 'category',
+                                    categories: limitedTimestamps
+                                },
+                                title: {
+                                    ...initialHeartRateData.options.title,
+                                    text: `Monitorizare Ritm Cardiac - ${selectedPatient?.nume || ''} ${selectedPatient?.prenume || ''}`
+                                },
+                                yaxis: {
+                                    ...initialHeartRateData.options.yaxis,
+                                    min: 50,
+                                    max: 130
+                                }
+                            }
+                        });
+                    }, (error) => {
+                        console.error('Eroare la ascultarea în timp real a pulsului:', error);
+                        message.error('Nu s-au putut primi datele de puls în timp real.');
+                    });
+
+                } catch (error) {
+                    console.error('Eroare la găsirea utilizatorului pentru pacient:', error);
+                    message.error('Nu s-a putut găsi utilizatorul asociat cu pacientul selectat.');
+                }
+            };
+
+            // Executăm funcția pentru a găsi utilizatorul și a configura listenerul
+            findUserByPatientEmail();
+        } else if (dataType === 'humidity') {
+            // Dacă am schimbat pe umiditate, facem fetch o singură dată
+            fetchHumidityData();
+        }
+
+        // Curățăm listenerul la demontare sau schimbare de dependențe
+        return () => {
+            if (unsubscribePulseListener.current) {
+                unsubscribePulseListener.current();
+                unsubscribePulseListener.current = null;
+            }
+        };
     }, [selectedPatient, dataType]);
 
     // Efect pentru a curăța intervalele la demontarea componentei
@@ -996,13 +1024,8 @@ const SensorData: FC = () => {
                                 >
                                     <Option value="heart-rate">Ritm Cardiac</Option>
                                     <Option value="humidity">Umiditate</Option>
-                                    <Option value="blood-pressure">Tensiune Arterială</Option>
                                     <Option value="oxygen">Saturație Oxigen</Option>
                                 </Select>
-                            </Col>
-                            <Col span={16}>
-                                <label>Selectează Interval:</label>
-                                <RangePicker style={{ width: '100%' }} />
                             </Col>
                         </Row>
                     </Card>
